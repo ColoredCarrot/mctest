@@ -23,7 +23,6 @@ class ForwardCommandTest {
 
         player.client.say("/forward")
 
-        syncPackets()
         assertThat(oldLocation.distance(player.location))
             .isCloseTo(1.0, withinEpsilon)
     }
