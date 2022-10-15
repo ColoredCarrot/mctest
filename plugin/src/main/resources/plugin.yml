@@ -1,0 +1,6 @@
+name: mctest-testserver-runtime
+version: @mctest.version@
+main: info.voidev.mctest.plugin.MctestServerRuntimePlugin
+author: Voidev
+api-version: 1.18
+load: STARTUP

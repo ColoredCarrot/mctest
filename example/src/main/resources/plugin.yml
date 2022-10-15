@@ -1,0 +1,16 @@
+name: Example
+version: @version@
+description: Example plugin to demonstrate MCTest
+author: Voidev
+main: info.voidev.mctest.example.ExamplePlugin
+api-version: 1.18
+
+commands:
+  forward:
+    usage: /forward [distance=1] [player=@s]
+    permission: example.forward
+    description: Teleports a player forward by some distance
+
+permissions:
+  example.forward:
+    default: true

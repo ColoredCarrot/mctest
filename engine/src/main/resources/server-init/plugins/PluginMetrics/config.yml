@@ -1,0 +1,9 @@
+# We don't need nor want stats for test servers,
+# and we don't want any (attempts at) outgoing connections either.
+opt-out: true
+
+# Same UUID for all MCTest test servers,
+# so there's no chance for any loss of anonymity if all else fails.
+guid: e8cc6565-1a0b-4bd7-988e-5690c46e46ac
+
+debug: false
