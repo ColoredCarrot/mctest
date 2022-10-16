@@ -13,26 +13,31 @@ class PhysicalTestPlayer(
     override val client: TestPlayerClientImpl,
 ) : TestPlayer, Player by server {
 
-    override suspend fun awaitClientboundPackets(scope: TickFunctionScope) = Performance.section("awaitClientboundPackets") {
-        scope.yieldTicksUntil {
-            if (!server.isOnline) throw TestPlayerDisconnectedException(this)
+    override suspend fun awaitClientboundPackets(scope: TickFunctionScope) =
+        Performance.section("awaitClientboundPackets") {
+            scope.yieldTicksUntil {
+                if (!server.isOnline) throw TestPlayerDisconnectedException(this)
 
-            ServerPacketCounter.getClientboundPacketCount(server) <= client.receivedPacketsCount
+                ServerPacketCounter.getClientboundPacketCount(server) <= client.receivedPacketsCount
+            }
         }
-    }
 
-    override suspend fun awaitServerboundPackets(scope: TickFunctionScope) = Performance.section("awaitServerboundPackets") {
-        scope.yieldTicksUntil {
-            if (!server.isOnline) throw TestPlayerDisconnectedException(this)
+    override suspend fun awaitServerboundPackets(scope: TickFunctionScope) =
+        Performance.section("awaitServerboundPackets") {
+            scope.yieldTicksUntil {
+                if (!server.isOnline) throw TestPlayerDisconnectedException(this)
 
-            ServerPacketCounter.getServerboundPacketCount(server) >= client.sentPacketsCount
+                ServerPacketCounter.getServerboundPacketCount(server) >= client.sentPacketsCount
+            }
         }
-    }
 
     suspend fun syncOwnPackets(scope: TickFunctionScope) {
-        scope.yieldTick()
-        awaitServerboundPackets(scope)
-        awaitClientboundPackets(scope)
+        scope.yieldTicksUntil {
+            if (!server.isOnline) throw TestPlayerDisconnectedException(this)
+
+            client.receivedPacketsCount >= ServerPacketCounter.getClientboundPacketCount(server) &&
+                    ServerPacketCounter.getServerboundPacketCount(server) >= client.sentPacketsCount
+        }
     }
 
 }

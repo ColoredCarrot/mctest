@@ -13,6 +13,8 @@ class TestPlayerParamBinder : ParamBinderForClass<TestPlayer>(TestPlayer::class.
         val testPlayerAnnot = param.getAnnotation(MCTestPlayer::class.java) ?: MCTestPlayer()
         val testPlayerSpec = TestPlayerSpec(
             name = testPlayerAnnot.name.ifEmpty { getPlayerNameFromParamName(param.name) },
+            op = testPlayerAnnot.op,
+            permissions = testPlayerAnnot.permissions.asList(),
         )
 
         return scopeBuilder.newTestPlayer(testPlayerSpec)

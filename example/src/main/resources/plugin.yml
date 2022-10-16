@@ -13,4 +13,4 @@ commands:
 
 permissions:
   example.forward:
-    default: true
+    default: op

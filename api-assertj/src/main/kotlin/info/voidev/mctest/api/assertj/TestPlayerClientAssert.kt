@@ -19,4 +19,11 @@ class TestPlayerClientAssert(actual: TestPlayerClient) :
         return this
     }
 
+    inline fun hasNotReceivedMessageThat(crossinline asserter: StringAssert.() -> Unit): TestPlayerClientAssert {
+        receivedMessages().noneSatisfy(Consumer {
+            asserter(StringAssert(it))
+        })
+        return this
+    }
+
 }

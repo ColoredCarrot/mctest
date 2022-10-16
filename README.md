@@ -4,6 +4,8 @@ A testing framework for Spigot plugins, implemented as a Jupiter (JUnit 5) test 
 
 **Highlights:**
 
+- Full IDE integration: Since MCTest acts as a Jupiter test engine,
+  IDEs like IntelliJ automatically integrate with MCTest just like any other test engine (like JUnit).
 - Physical test players: Declaring a `TestPlayer` parameter
   will join a physical Minecraft client to the server
   and give you access to the Bukkit `Player` as well as a fully capable client.

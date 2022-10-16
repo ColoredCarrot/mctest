@@ -16,13 +16,11 @@ class TestScopeBuilder(
         TestPlayerService.join(spec, tickScope).also(testPlayers::add)
 
     override suspend fun syncPackets() {
-        // We also have a "grace tick" before and after
+        // We also have a "grace tick" before
         yieldTick()
         for (testPlayer in testPlayers) {
-            testPlayer.awaitServerboundPackets(this)
-            testPlayer.awaitClientboundPackets(this)
+            testPlayer.syncOwnPackets(tickScope)
         }
-        yieldTick()
     }
 
 }

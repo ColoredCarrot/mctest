@@ -5,4 +5,6 @@ package info.voidev.mctest.api
 @MustBeDocumented
 annotation class MCTestPlayer(
     val name: String = "",
+    val op: Boolean = true,
+    val permissions: Array<String> = [],
 )
