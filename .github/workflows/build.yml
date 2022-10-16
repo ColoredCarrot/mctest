@@ -20,6 +20,7 @@ jobs:
         uses: gradle/wrapper-validation-action@v1.0.4
 
       - name: Set Up JDK 17
+        id: set-up-java
         uses: actions/setup-java@v3.5.1
         with:
           java-version: 17
@@ -27,6 +28,12 @@ jobs:
 
       - name: Set Up Gradle
         uses: gradle/gradle-build-action@v2
+
+      - name: Echo java
+        run: which java
+
+      - name: Echo java path
+        run: echo "${{ steps.set-up-java.outputs.path }}"
 
       - name: Run Build
         run: ./gradlew build --info
