@@ -3,7 +3,8 @@ name: Build
 on:
   push:
     branches: [ "master" ]
-  pull_request: {}
+  pull_request:
+  workflow_call:
 
 permissions:
   contents: read
@@ -30,4 +31,4 @@ jobs:
         uses: gradle/gradle-build-action@v2
 
       - name: Run Build
-        run: ./gradlew build -PmctestJava="${{steps.set-up-java.outputs.path}}/bin/java"
+        run: ./gradlew build -PmctestJava="${{ steps.set-up-java.outputs.path }}/bin/java"
