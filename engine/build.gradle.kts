@@ -40,10 +40,8 @@ tasks.withType<org.gradle.jvm.tasks.Jar> {
     dependsOn(":runtime:shadowJar")
 
     val runtimeJarPath = theRuntime.asPath.split(File.pathSeparator, limit = 2).first()
-    if (File(runtimeJarPath).isFile) {
-        from(runtimeJarPath) {
-            rename(Regex.escape(runtimeJarPath.substringAfterLast(File.separator)), "runtime.jar")
-        }
+    from(runtimeJarPath) {
+        rename(Regex.escape(runtimeJarPath.substringAfterLast(File.separator)), "runtime.jar")
     }
 }
 
