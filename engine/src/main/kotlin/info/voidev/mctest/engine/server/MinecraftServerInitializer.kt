@@ -89,8 +89,7 @@ class MinecraftServerInitializer(private val dir: Path) : Runnable {
 
         // A previous directory exists; check that it is likely a server directory
         if (!dir.resolve("server.properties").isRegularFile() ||
-            !dir.resolve("bukkit.yml").isRegularFile() ||
-            !dir.resolve("bundler").isDirectory()
+            !dir.resolve("eula.txt").isRegularFile()
         ) {
             throw ServerInitException("Existing server directory does not look like a server directory: $dir")
         }
