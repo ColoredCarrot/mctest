@@ -6,13 +6,6 @@ plugins {
 group = "info.voidev.mctest"
 version = "0.1.0"
 
-repositories {
-    mavenCentral()
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots")
-    maven("https://repo.opencollab.dev/maven-releases/")
-    maven("https://jitpack.io")
-}
-
 val theRuntime = configurations.create("theRuntime")
 
 dependencies {

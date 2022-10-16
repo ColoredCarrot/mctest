@@ -9,12 +9,6 @@ version = "0.1.0"
 
 val mctestJava: String? by project
 
-repositories {
-    mavenCentral()
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots")
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
-}
-
 dependencies {
     compileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")
     testCompileOnly("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")

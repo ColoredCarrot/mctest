@@ -6,11 +6,6 @@ plugins {
 group = "info.voidev.mctest"
 version = "0.1.0"
 
-repositories {
-    mavenCentral()
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots")
-}
-
 dependencies {
     api("org.junit.platform:junit-platform-commons:1.9.0")
     api("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")//TODO is there a more appropriate config for this?

@@ -7,13 +7,6 @@ plugins {
 group = "info.voidev.mctest"
 version = "0.1.0"
 
-repositories {
-    mavenCentral()
-    maven("https://repo.opencollab.dev/maven-releases/")
-    maven("https://jitpack.io")
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots")
-}
-
 dependencies {
     implementation(project(":runtime-sdk"))
     implementation("org.ow2.asm:asm:9.3")

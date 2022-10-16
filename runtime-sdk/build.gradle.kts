@@ -6,11 +6,6 @@ plugins {
 group = "info.voidev.mctest"
 version = "0.1.0"
 
-repositories {
-    mavenCentral()
-    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots")
-}
-
 dependencies {
     api(project(":api"))
 
