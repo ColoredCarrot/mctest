@@ -1,6 +1,7 @@
 plugins {
     id("java")
     kotlin("jvm") version "1.6.21"
+    `maven-publish`
 }
 
 group = "info.voidev.mctest"
@@ -16,4 +17,12 @@ dependencies {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("api-assertj") {
+            from(components["java"])
+        }
+    }
 }

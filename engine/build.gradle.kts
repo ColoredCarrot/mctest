@@ -1,6 +1,7 @@
 plugins {
     id("java")
     kotlin("jvm") version "1.6.21"
+    `maven-publish`
 }
 
 group = "info.voidev.mctest"
@@ -46,4 +47,12 @@ tasks.withType<org.gradle.jvm.tasks.Jar> {
 
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("engine") {
+            from(components["java"])
+        }
+    }
 }
