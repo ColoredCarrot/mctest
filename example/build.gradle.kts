@@ -7,6 +7,8 @@ plugins {
 group = "info.voidev.mctest"
 version = "0.1.0"
 
+val mctestJava: String? by project
+
 repositories {
     mavenCentral()
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots")
@@ -30,7 +32,6 @@ tasks.getByName<KotlinCompile>("compileTestKotlin") {
     }
 }
 
-
 tasks.getByName<Test>("test") {
     useJUnitPlatform()
 
@@ -38,6 +39,7 @@ tasks.getByName<Test>("test") {
     // We want to explicitly (re-)use a fixed directory as the test server directory.
     // By default, a temporary directory is created in the OS temp folder.
     systemProperties(
+        "mctest.java" to mctestJava.orEmpty(),
         "mctest.server.dir" to project.buildDir.resolve("server-dir").absolutePath,
     )
 }

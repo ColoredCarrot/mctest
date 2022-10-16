@@ -29,11 +29,5 @@ jobs:
       - name: Set Up Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Echo java
-        run: which java
-
-      - name: Echo java path
-        run: echo "${{ steps.set-up-java.outputs.path }}"
-
       - name: Run Build
-        run: ./gradlew build --info
+        run: ./gradlew build -PmctestJava="${{ steps.set-up-java.outputs.path }}/bin/java" --info
