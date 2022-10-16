@@ -1,5 +1,7 @@
 # MCTest
 
+[![Build](https://github.com/ColoredCarrot/mctest/actions/workflows/build.yml/badge.svg)](https://github.com/ColoredCarrot/mctest/actions/workflows/build.yml)
+
 A testing framework for Spigot plugins, implemented as a Jupiter (JUnit 5) test engine.
 
 **Highlights:**
