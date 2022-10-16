@@ -12,8 +12,8 @@ class LocalFileCache(private val dir: Path) {
 
     private val base32 = Base32()
 
-    fun getCached(uri: URI): Path {
-        val localCopy = dir.resolve(getFilename(uri))
+    fun getCached(uri: URI, filename: String = getFilename(uri)): Path {
+        val localCopy = dir.resolve(filename)
 
         if (!localCopy.exists()) {
             download(uri, localCopy)

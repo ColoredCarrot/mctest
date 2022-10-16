@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     id("java")
     kotlin("jvm") version "1.6.21"
@@ -11,7 +9,11 @@ version = "0.1.0"
 repositories {
     mavenCentral()
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots")
+    maven("https://repo.opencollab.dev/maven-releases/")
+    maven("https://jitpack.io")
 }
+
+val theRuntime = configurations.create("theRuntime")
 
 dependencies {
     implementation(project(":api"))
@@ -30,6 +32,15 @@ dependencies {
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+
+    theRuntime(project(":runtime", "shadow"))
+}
+
+tasks.withType<org.gradle.jvm.tasks.Jar> {
+    val runtimeJarPath = theRuntime.asPath.split(File.pathSeparator, limit = 2).first()
+    from(runtimeJarPath) {
+        rename(Regex.escape(runtimeJarPath.substringAfterLast(File.separator)), "runtime.jar")
+    }
 }
 
 //tasks.withType<KotlinCompile> {

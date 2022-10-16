@@ -8,14 +8,21 @@ import kotlin.io.path.div
 class MCTestConfig(params: ConfigurationParameters) {
 
     val java: Path = params
-        .get("mctest.java", Path::of).orElse(null)
+        .get("mctest.java").orElse(null)
+        ?.takeIf { it.isNotEmpty() }
+        ?.let(Path::of)
         ?: Path.of("C:\\Users\\Koch\\.jdks\\openjdk-18.0.1.1\\bin\\java") // TODO: Discover java dynamically
-        ?: throw MCTestConfigException()
+        ?: throw MCTestConfigException("mctest.java")
 
     val dataDirectory: Path = params
         .get("mctest.data.dir", Path::of).orElse(null)
         ?: getDefaultDataDir()
-        ?: throw MCTestConfigException()
+        ?: throw MCTestConfigException("mctest.data.dir")
+
+    val runtimeJar: Path? = params
+        .get("mctest.runtime.jar").orElse(null)
+        ?.takeIf { it.isNotEmpty() }
+        ?.let(Path::of)
 
     val serverJarCacheDirectory: Path = params
         .get("mctest.server.jar.cache", Path::of).orElse(null)
@@ -50,6 +57,11 @@ class MCTestConfig(params: ConfigurationParameters) {
         .joinToString(prefix = "MCTestConfig[\n\t", separator = ",\n\t", postfix = "\n]") { (key, value) ->
             "$key\t= $value"
         }
+
+    private fun findJava(): Path? {
+        System.getenv("JAVA_HOME")
+        TODO()
+    }
 
     private fun getDefaultDataDir(): Path? {
         return when {
