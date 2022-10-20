@@ -1,7 +1,7 @@
 package info.voidev.mctest.engine.execution
 
 import info.voidev.mctest.engine.MctestEngineDescriptor
-import info.voidev.mctest.engine.config.MCTestConfig
+import info.voidev.mctest.engine.config.JUnitMCTestConfig
 import info.voidev.mctest.engine.discovery.ClassTestDescriptor
 import info.voidev.mctest.engine.discovery.MethodTestDescriptor
 import info.voidev.mctest.engine.server.TestableMinecraftServer
@@ -21,7 +21,7 @@ class McTestExecutor(
     params: ConfigurationParameters,
 ) {
 
-    private val config = MCTestConfig(params)
+    private val config = JUnitMCTestConfig(params)
 
     fun execute() {
         listener.executionStarted(root)

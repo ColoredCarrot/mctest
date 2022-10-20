@@ -1,6 +1,6 @@
 package info.voidev.mctest.engine.server
 
-import info.voidev.mctest.engine.config.MCTestConfig
+import info.voidev.mctest.engine.config.JUnitMCTestConfig
 import info.voidev.mctest.engine.config.MCTestConfigException
 import info.voidev.mctest.engine.proto.EngineServiceImpl
 import info.voidev.mctest.engine.util.LocalFileCache
@@ -16,7 +16,7 @@ import kotlin.io.path.div
 import kotlin.io.path.extension
 import kotlin.io.path.isRegularFile
 
-class TestableMinecraftServer(private val config: MCTestConfig) {
+class TestableMinecraftServer(private val config: JUnitMCTestConfig) {
 
     private val serverDir = config.serverDirectory ?: TemporaryDirectories.create("mctest-server-")
 

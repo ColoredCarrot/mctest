@@ -5,13 +5,13 @@ import org.junit.platform.engine.ConfigurationParameters
 import java.nio.file.Path
 import kotlin.io.path.div
 
-class MCTestConfig(params: ConfigurationParameters) {
+class JUnitMCTestConfig(params: ConfigurationParameters) {
 
     val java: Path = params
         .get("mctest.java").orElse(null)
-        ?.takeIf { it.isNotEmpty() }
+        ?.ifEmpty { null }
         ?.let(Path::of)
-        ?: Path.of("C:\\Users\\Koch\\.jdks\\openjdk-18.0.1.1\\bin\\java") // TODO: Discover java dynamically
+        ?: SystemInfo.findJava()
         ?: throw MCTestConfigException("mctest.java")
 
     val dataDirectory: Path = params
@@ -19,9 +19,10 @@ class MCTestConfig(params: ConfigurationParameters) {
         ?: getDefaultDataDir()
         ?: throw MCTestConfigException("mctest.data.dir")
 
+    /** If `null`, the classpath will be searched for the runtime. */
     val runtimeJar: Path? = params
         .get("mctest.runtime.jar").orElse(null)
-        ?.takeIf { it.isNotEmpty() }
+        ?.ifEmpty { null }
         ?.let(Path::of)
 
     val serverJarCacheDirectory: Path = params
@@ -57,11 +58,6 @@ class MCTestConfig(params: ConfigurationParameters) {
         .joinToString(prefix = "MCTestConfig[\n\t", separator = ",\n\t", postfix = "\n]") { (key, value) ->
             "$key\t= $value"
         }
-
-    private fun findJava(): Path? {
-        System.getenv("JAVA_HOME")
-        TODO()
-    }
 
     private fun getDefaultDataDir(): Path? {
         return when {
