@@ -2,6 +2,17 @@ name: Publish
 
 on:
   workflow_dispatch:
+    inputs:
+      package:
+        description: Which package to publish (or "all")
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - api
+          - api-assertj
+          - engine
 
 jobs:
   build:
@@ -31,7 +42,26 @@ jobs:
       - name: Set Up Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Run Publish
+      - name: Publish api
+        if: inputs.package == 'api'
+        run: ./gradlew :api:publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish api-assertj
+        if: inputs.package == 'api-assertj'
+        run: ./gradlew :api-assertj:publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish engine
+        if: inputs.package == 'engine'
+        run: ./gradlew :engine:publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish All
+        if: inputs.package == 'all'
         run: ./gradlew publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
