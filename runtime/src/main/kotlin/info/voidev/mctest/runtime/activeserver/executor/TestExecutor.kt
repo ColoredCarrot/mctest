@@ -6,7 +6,7 @@ import info.voidev.mctest.runtime.activeserver.lib.parambind.TestPlayerParamBind
 import info.voidev.mctest.api.TickFunctionScope
 import info.voidev.mctest.runtime.activeserver.lib.parambind.CollectiveParamBinder
 import info.voidev.mctest.runtime.activeserver.lib.parambind.TestScopeParamBinder
-import info.voidev.mctest.runtime.activeserver.lib.testplayer.TestPlayerClientImpl
+import info.voidev.mctest.runtime.activeserver.lib.testplayer.PhysicalTestPlayerClient
 import info.voidev.mctest.runtime.activeserver.lib.tickfunction.launchTickFunction
 import info.voidev.mctest.runtime.activeserver.testeePluginInstance
 import info.voidev.mctest.runtimesdk.InvalidTestException
@@ -100,7 +100,7 @@ class TestExecutor {
             // Disconnect any test players
             for (arg in argsExceptContinuation) {
                 if (arg is TestPlayer) {
-                    (arg.client as TestPlayerClientImpl).disconnect()
+                    (arg.client as PhysicalTestPlayerClient).disconnect()
                 }
             }
         }

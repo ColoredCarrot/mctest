@@ -1,11 +1,11 @@
 package info.voidev.mctest.example
 
-import info.voidev.mctest.api.Assertions.assertTrue
 import info.voidev.mctest.api.MCTest
 import info.voidev.mctest.api.MCTestPlayer
 import info.voidev.mctest.api.TestPlayer
 import info.voidev.mctest.api.TestScope
 import info.voidev.mctest.api.assertj.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.bukkit.Bukkit
 
 class ChatTest {
@@ -14,12 +14,11 @@ class ChatTest {
     suspend fun TestScope.`player receives chat`(
         @MCTestPlayer(name = "John") john: TestPlayer,
     ) {
-        assertTrue(Bukkit.isPrimaryThread())
+        assertThat(Bukkit.isPrimaryThread()).isTrue()
 
         john.sendMessage("Hello, world!")
 
-        assertThat(john.client)
-            .hasReceivedMessageThat { contains("Hello, world!") }
+        assertThat(john.client).hasReceivedMessageThat { contains("Hello, world!") }
     }
 
     @MCTest
@@ -29,10 +28,8 @@ class ChatTest {
     ) {
         alice.client.say("Hello, world!")
 
-        assertThat(bob.client)
-            .hasReceivedMessageThat { contains("Alice", "Hello, world!") }
-        assertThat(alice.client)
-            .hasReceivedMessageThat { contains("Hello, world!") }
+        assertThat(bob.client).hasReceivedMessageThat { contains("Alice", "Hello, world!") }
+        assertThat(alice.client).hasReceivedMessageThat { contains("Hello, world!") }
     }
 
     @MCTest
@@ -43,10 +40,8 @@ class ChatTest {
     ) {
         alice.client.say("Hello, world!")
 
-        assertThat(bob).client
-            .hasReceivedMessageThat { contains("Alice", "Hello, world!") }
-        assertThat(charlie).client
-            .hasReceivedMessageThat { contains("Alice", "Hello, world!") }
+        assertThat(bob).client.hasReceivedMessageThat { contains("Alice", "Hello, world!") }
+        assertThat(charlie).client.hasReceivedMessageThat { contains("Alice", "Hello, world!") }
     }
 
 }

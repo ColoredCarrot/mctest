@@ -3,28 +3,23 @@ package info.voidev.mctest.runtime.activeserver.lib.testplayer
 import com.github.steveice10.mc.auth.data.GameProfile
 import com.github.steveice10.mc.protocol.MinecraftProtocol
 import com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundChatPacket
-import com.github.steveice10.mc.protocol.packet.ingame.clientbound.entity.spawn.ClientboundAddPlayerPacket
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundChatPacket
-import com.github.steveice10.mc.protocol.packet.ingame.serverbound.player.ServerboundMovePlayerPosPacket
 import com.github.steveice10.packetlib.Session
 import com.github.steveice10.packetlib.event.session.DisconnectedEvent
 import com.github.steveice10.packetlib.event.session.DisconnectingEvent
-import com.github.steveice10.packetlib.event.session.PacketErrorEvent
 import com.github.steveice10.packetlib.event.session.PacketSendingEvent
 import com.github.steveice10.packetlib.event.session.SessionAdapter
 import com.github.steveice10.packetlib.packet.Packet
 import com.github.steveice10.packetlib.tcp.TcpClientSession
 import info.voidev.mctest.api.TestPlayerClient
 import info.voidev.mctest.api.TickFunctionScope
-import info.voidev.mctest.api.testplayer.ClientTabList
 import info.voidev.mctest.runtime.activeserver.lib.chatcomponent.extractText
 import info.voidev.mctest.runtime.activeserver.lib.testplayer.state.ClientState
 import org.bukkit.entity.Entity
 import java.util.Collections
 import java.util.UUID
-import java.util.concurrent.atomic.AtomicInteger
 
-class TestPlayerClientImpl(spec: TestPlayerSpec, port: Int, private val tfs: TickFunctionScope) : TestPlayerClient {
+class PhysicalTestPlayerClient(spec: TestPlayerSpec, port: Int, private val tfs: TickFunctionScope) : TestPlayerClient {
 
     companion object {
         private const val NORMAL_DISCONNECT_REASON = "Test has completed"

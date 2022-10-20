@@ -10,7 +10,7 @@ import org.bukkit.entity.Player
 
 class PhysicalTestPlayer(
     override val server: Player,
-    override val client: TestPlayerClientImpl,
+    override val client: PhysicalTestPlayerClient,
 ) : TestPlayer, Player by server {
 
     override suspend fun awaitClientboundPackets(scope: TickFunctionScope) =

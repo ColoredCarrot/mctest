@@ -11,13 +11,15 @@ object TestPlayerService {
     suspend fun join(spec: TestPlayerSpec, tickScope: TickFunctionScope): PhysicalTestPlayer {
         require(Bukkit.isPrimaryThread())
 
-        val client = TestPlayerClientImpl(spec, Bukkit.getPort(), tickScope)
-        // Connect on a separate thread
+        val client = PhysicalTestPlayerClient(spec, Bukkit.getPort(), tickScope)
+
+        // Connect on a separate thread so as not to block the primary thread
+        // (we will be yielding ticks instead)
         Bukkit.getScheduler().runTaskAsynchronously(testeePluginInstance, Runnable {
             client.connect()
         })
 
-        //TODO reasonable timeout
+        //TODO make timeout configurable
         val player = tickScope.yieldTicksUntilNotNull(20 * 10) { Bukkit.getPlayerExact(spec.name) }
 
         player.isOp = spec.op
