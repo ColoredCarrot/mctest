@@ -1,56 +1,59 @@
 package info.voidev.mctest.engine.config
 
 import info.voidev.mctest.engine.util.SystemInfo
+import info.voidev.mctest.runtimesdk.proto.MctestConfig
 import org.junit.platform.engine.ConfigurationParameters
 import java.nio.file.Path
 import kotlin.io.path.div
 
-class JUnitMCTestConfig(params: ConfigurationParameters) {
+class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig {
 
-    val java: Path = params
+    override val java: Path = params
         .get("mctest.java").orElse(null)
         ?.ifEmpty { null }
         ?.let(Path::of)
         ?: SystemInfo.findJava()
         ?: throw MCTestConfigException("mctest.java")
 
-    val dataDirectory: Path = params
+    override val dataDirectory: Path = params
         .get("mctest.data.dir", Path::of).orElse(null)
         ?: getDefaultDataDir()
         ?: throw MCTestConfigException("mctest.data.dir")
 
-    /** If `null`, the classpath will be searched for the runtime. */
-    val runtimeJar: Path? = params
+    override val runtimeJar: Path? = params
         .get("mctest.runtime.jar").orElse(null)
         ?.ifEmpty { null }
         ?.let(Path::of)
 
-    val serverJarCacheDirectory: Path = params
+    override val serverJarCacheDirectory: Path = params
         .get("mctest.server.jar.cache", Path::of).orElse(null)
         ?: (dataDirectory / "serverjars")
 
-    val serverDirectory: Path? = params
+    override val serverDirectory: Path? = params
         .get("mctest.server.dir").orElse(null)
         ?.let { if (it == "TEMP" || it == "TMP" || it.isEmpty()) null else Path.of(it) }
 
-    val rmiPort: Int = params
+    override val rmiPort: Int = params
         .get("mctest.rmi.port", String::toInt).orElse(null)
         ?: 1099
 
-    val runtimeBootstrapTimeoutMs: Long = params
+    override val runtimeBootstrapTimeoutMs: Long = params
         .get("mctest.runtime.bootstrap.timeout.ms", String::toLong).orElse(null)
         ?: (10 * 1000L)
 
-    val serverStartTimeoutMs: Long = params
+    override val serverStartTimeoutMs: Long = params
         .get("mctest.server.start.timeout.ms", String::toLong).orElse(null)
         ?: (120 * 1000L)
 
-    fun export() = mapOf(
-        "java" to java.toString(),
-        "dataDirectory" to dataDirectory.toString(),
-        "serverJarCacheDirectory" to serverJarCacheDirectory.toString(),
-        "serverDirectory" to serverDirectory.toString(),
-        "rmiPort" to rmiPort.toString(),
+    fun export(): Map<String, String> = mapOf(
+        "mctest.java" to java.toString(),
+        "mctest.data.dir" to dataDirectory.toString(),
+        "mctest.runtime.jar" to runtimeJar.toString(),
+        "mctest.server.jar.cache" to serverJarCacheDirectory.toString(),
+        "mctest.server.dir" to serverDirectory.toString(),
+        "mctest.rmi.port" to rmiPort.toString(),
+        "mctest.runtime.bootstrap.timeout.ms" to runtimeBootstrapTimeoutMs.toString(),
+        "mctest.server.start.timeout.ms" to serverStartTimeoutMs.toString(),
     )
 
     override fun toString() = export()

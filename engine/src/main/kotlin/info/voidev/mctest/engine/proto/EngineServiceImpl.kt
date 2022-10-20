@@ -1,13 +1,13 @@
 package info.voidev.mctest.engine.proto
 
-import info.voidev.mctest.engine.config.JUnitMCTestConfig
 import info.voidev.mctest.runtimesdk.proto.EngineService
+import info.voidev.mctest.runtimesdk.proto.MctestConfig
 import info.voidev.mctest.runtimesdk.util.IsServerClassName
 import java.io.InputStream
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-class EngineServiceImpl(private val config: JUnitMCTestConfig) : EngineService {
+class EngineServiceImpl(private val config: MctestConfig) : EngineService {
 
     private val bootstrapMutex = CountDownLatch(1)
     private val serverStartedMutex = CountDownLatch(1)
