@@ -1,7 +1,7 @@
 package info.voidev.mctest.runtime.activeserver.lib.parambind
 
-import info.voidev.mctest.api.MCTestPlayer
-import info.voidev.mctest.api.TestPlayer
+import info.voidev.mctest.api.testplayer.MCTestPlayer
+import info.voidev.mctest.api.testplayer.TestPlayer
 import info.voidev.mctest.runtime.activeserver.executor.TestScopeBuilder
 import info.voidev.mctest.runtime.activeserver.lib.testplayer.PhysicalTestPlayer
 import info.voidev.mctest.runtime.activeserver.lib.testplayer.TestPlayerSpec

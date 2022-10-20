@@ -1,10 +1,10 @@
 package info.voidev.mctest.runtime.activeserver.executor
 
 import info.voidev.mctest.api.MCTest
-import info.voidev.mctest.api.TestPlayer
-import info.voidev.mctest.runtime.activeserver.lib.parambind.TestPlayerParamBinder
 import info.voidev.mctest.api.TickFunctionScope
+import info.voidev.mctest.api.testplayer.TestPlayer
 import info.voidev.mctest.runtime.activeserver.lib.parambind.CollectiveParamBinder
+import info.voidev.mctest.runtime.activeserver.lib.parambind.TestPlayerParamBinder
 import info.voidev.mctest.runtime.activeserver.lib.parambind.TestScopeParamBinder
 import info.voidev.mctest.runtime.activeserver.lib.testplayer.PhysicalTestPlayerClient
 import info.voidev.mctest.runtime.activeserver.lib.tickfunction.launchTickFunction

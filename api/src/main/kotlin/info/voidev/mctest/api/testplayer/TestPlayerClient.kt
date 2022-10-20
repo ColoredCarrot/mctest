@@ -1,6 +1,5 @@
-package info.voidev.mctest.api
+package info.voidev.mctest.api.testplayer
 
-import info.voidev.mctest.api.testplayer.ClientTabList
 import org.bukkit.entity.Entity
 
 interface TestPlayerClient {

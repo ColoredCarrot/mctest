@@ -33,6 +33,24 @@ class ForwardCommandTest {
 }
 ```
 
+## Installation
+
+Using `build.gradle.kts`:
+
+```kotlin
+repositories {
+    /* ... */
+    maven("https://maven.pkg.github.com/ColoredCarrot/mctest")
+}
+
+dependencies {
+    /* ... */
+    testImplementation("info.voidev.mctest:api:${mctestVersion}")
+    testImplementation("info.voidev.mctest:api-assertj:${mctestVersion}") // Optional
+    testRuntimeOnly("info.voidev.mctest:engine:${mctestVersion}")
+}
+```
+
 ## Implementation
 
 ### Terminology
@@ -47,7 +65,7 @@ We use Java's Runtime Method Invocation (RMI) mechanism.
 1. The engine (E) sets up a registry on some free port (say 1099)
 2. E starts up the runtime (R), passing the registry's port
 3. R gets a reference to the registry and registers its service
-4. R passes a signal via STDOUT to E
+4. R sends a signal via RMI to E
 5. E looks up the runtime service (knowing it's available because of the signal)
 
 Bidirectional communication is now established.

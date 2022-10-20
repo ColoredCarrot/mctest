@@ -6,7 +6,7 @@ import kotlin.contracts.contract
 /**
  * Standard set of assertions shipped with MCTest.
  * You are welcome to use any other assertion library,
- * like AssertJ or Hamcrest.
+ * like AssertJ or Hamcrest--or even JUnit Jupiter.
  */
 @OptIn(ExperimentalContracts::class)
 object Assertions {
@@ -18,7 +18,9 @@ object Assertions {
     }
 
     @JvmStatic
-    inline fun fail(cause: Throwable? = null, messageSupplier: () -> String?): Nothing = fail(messageSupplier(), cause)
+    inline fun fail(cause: Throwable? = null, messageSupplier: () -> String?): Nothing {
+        fail(messageSupplier(), cause)
+    }
 
     @JvmStatic
     inline fun assertTrue(value: Boolean, messageSupplier: () -> String? = { null }) {
@@ -28,8 +30,9 @@ object Assertions {
     }
 
     @JvmStatic
+    @JvmOverloads
     fun assertEquals(expected: Any?, actual: Any?, message: String? = null) {
-        assertTrue(expected == actual) { message ?: "Expected: $expected  Got: $actual" }
+        assertEquals(expected, actual) { message }
     }
 
     @JvmStatic
@@ -38,21 +41,32 @@ object Assertions {
     }
 
     @JvmStatic
-    inline fun assertNull(actual: Any?, messageSupplier: () -> String? = { null }) {
+    @JvmOverloads
+    fun assertNull(actual: Any?, message: String? = null) {
+        assertNull(actual) { message }
+    }
+
+    @JvmStatic
+    inline fun assertNull(actual: Any?, messageSupplier: () -> String?) {
         contract {
             returns() implies (actual == null)
         }
 
-        assertEquals(null, actual) { messageSupplier() ?: "Expected value to be null, got $actual" }
+        assertEquals(null, actual, messageSupplier)
     }
 
     @JvmStatic
-    inline fun assertNotNull(actual: Any?, messageSupplier: () -> String? = { null }) {
+    @JvmOverloads
+    fun assertNotNull(actual: Any?, message: String? = null) {
+        assertNotNull(actual) { message }
+    }
+
+    @JvmStatic
+    inline fun assertNotNull(actual: Any?, messageSupplier: () -> String?) {
         contract {
             returns() implies (actual != null)
         }
 
         assertTrue(actual != null) { messageSupplier() ?: "Expected value to be non-null" }
     }
-
 }

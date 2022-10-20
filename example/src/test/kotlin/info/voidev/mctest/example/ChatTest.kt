@@ -1,8 +1,8 @@
 package info.voidev.mctest.example
 
 import info.voidev.mctest.api.MCTest
-import info.voidev.mctest.api.MCTestPlayer
-import info.voidev.mctest.api.TestPlayer
+import info.voidev.mctest.api.testplayer.MCTestPlayer
+import info.voidev.mctest.api.testplayer.TestPlayer
 import info.voidev.mctest.api.TestScope
 import info.voidev.mctest.api.assertj.assertThat
 import org.assertj.core.api.Assertions.assertThat

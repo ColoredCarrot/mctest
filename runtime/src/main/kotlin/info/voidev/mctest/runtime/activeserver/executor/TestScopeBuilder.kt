@@ -14,7 +14,7 @@ class TestScopeBuilder(
     private val testPlayers = ArrayList<PhysicalTestPlayer>()
 
     suspend fun newTestPlayer(spec: TestPlayerSpec) =
-        TestPlayerService.join(spec, tickScope).also(testPlayers::add)
+        TestPlayerService.join(spec, this).also(testPlayers::add)
 
     override suspend fun syncPackets() {
         for (testPlayer in testPlayers) {

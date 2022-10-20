@@ -1,7 +1,7 @@
 # mctest-api
 
 The API for your projects using MCTest.
-Should be depended on via `testCompileOnly`.
+Should be depended on via `testImplementation`.
 
 ## Parameter Binding
 

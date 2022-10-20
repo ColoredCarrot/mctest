@@ -2,8 +2,8 @@
 
 package info.voidev.mctest.api.assertj
 
-import info.voidev.mctest.api.TestPlayer
-import info.voidev.mctest.api.TestPlayerClient
+import info.voidev.mctest.api.testplayer.TestPlayer
+import info.voidev.mctest.api.testplayer.TestPlayerClient
 import info.voidev.mctest.api.TestScope
 import info.voidev.mctest.api.testplayer.ClientTabList
 import org.bukkit.Location

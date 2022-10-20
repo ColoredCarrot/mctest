@@ -5,7 +5,7 @@ import org.junit.platform.commons.annotation.Testable
 /**
  * Methods marked with this annotation are MCTest test methods.
  *
- * Such methods are executed in a different JVM in a Bukkit server.
+ * Such methods are executed in a different JVM in a Spigot server.
  */
 @Target(AnnotationTarget.ANNOTATION_CLASS, AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.RUNTIME)

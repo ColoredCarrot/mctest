@@ -1,6 +1,6 @@
 package info.voidev.mctest.api.assertj
 
-import info.voidev.mctest.api.TestPlayerClient
+import info.voidev.mctest.api.testplayer.TestPlayerClient
 import org.assertj.core.api.AbstractAssert
 import org.assertj.core.api.ListAssert
 import org.assertj.core.api.StringAssert

@@ -1,7 +1,7 @@
 package info.voidev.mctest.example
 
 import info.voidev.mctest.api.MCTest
-import info.voidev.mctest.api.TestPlayer
+import info.voidev.mctest.api.testplayer.TestPlayer
 import info.voidev.mctest.api.assertj.assertThat
 
 class TabListTest {
