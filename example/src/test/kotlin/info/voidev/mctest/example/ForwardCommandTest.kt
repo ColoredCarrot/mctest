@@ -4,6 +4,7 @@ import info.voidev.mctest.api.MCTest
 import info.voidev.mctest.api.MCTestPlayer
 import info.voidev.mctest.api.TestPlayer
 import info.voidev.mctest.api.TestScope
+import info.voidev.mctest.api.assertj.assertThat
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.within
 import org.bukkit.Bukkit
@@ -47,6 +48,18 @@ class ForwardCommandTest {
         syncPackets()
         assertThat(oldLocation.distance(player.location))
             .isCloseTo(4.0, withinEpsilon)
+    }
+
+    @MCTest
+    suspend fun TestScope.`forward by invalid number`(
+        @MCTestPlayer(name = "John") player: TestPlayer,
+    ) {
+        val oldLocation = player.location
+
+        player.client.say("/forward nan")
+
+        assertThat(player.client).hasReceivedMessageThat { isEqualTo("Not a valid number") }
+        assertThat(player.location).isCloseTo(oldLocation, withinEpsilon)
     }
 
     companion object {
