@@ -1,5 +1,6 @@
 package info.voidev.mctest.engine.execution
 
+import info.voidev.mctest.api.Disabled
 import info.voidev.mctest.engine.MctestEngineDescriptor
 import info.voidev.mctest.engine.config.JUnitMctestConfig
 import info.voidev.mctest.engine.discovery.ClassTestDescriptor
@@ -12,6 +13,7 @@ import org.junit.platform.engine.EngineExecutionListener
 import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.engine.reporting.ReportEntry
 import org.objectweb.asm.Type
+import java.lang.reflect.AnnotatedElement
 import java.lang.reflect.InvocationTargetException
 import kotlin.system.measureTimeMillis
 
@@ -51,6 +53,11 @@ class McTestExecutor(
     }
 
     private fun executeClass(testClass: ClassTestDescriptor, serverSession: TestableServerSession) {
+        getDisabledReason(testClass.testClass)?.also { disabledReason ->
+            listener.executionSkipped(testClass, disabledReason)
+            return
+        }
+
         listener.executionStarted(testClass)
 
         try {
@@ -66,6 +73,11 @@ class McTestExecutor(
     }
 
     private fun executeTestMethod(testMethod: MethodTestDescriptor, serverSession: TestableServerSession) {
+        getDisabledReason(testMethod.method)?.also { disabledReason ->
+            listener.executionSkipped(testMethod, disabledReason)
+            return
+        }
+
         listener.executionStarted(testMethod)
 
         try {
@@ -85,4 +97,8 @@ class McTestExecutor(
         }
     }
 
+    private fun getDisabledReason(testMethodOrClass: AnnotatedElement): String? {
+        val annot = testMethodOrClass.getAnnotation(Disabled::class.java) ?: return null
+        return annot.value.trim().ifEmpty { "$testMethodOrClass is @Disabled" }
+    }
 }
