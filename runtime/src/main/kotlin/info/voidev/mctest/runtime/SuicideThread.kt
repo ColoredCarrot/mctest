@@ -1,6 +1,9 @@
 package info.voidev.mctest.runtime
 
-class SuicideThread private constructor() : Thread("Suicide") {
+import kotlin.system.exitProcess
+
+class SuicideThread private constructor(private val deadline: Long) : Thread("Suicide") {
+
     init {
         isDaemon = true
 
@@ -14,11 +17,16 @@ class SuicideThread private constructor() : Thread("Suicide") {
     override fun run() {
         while (true) {
             try {
-                sleep(2000)
+                sleep(10_000)
             } catch (_: InterruptedException) {
             }
 
             //FIXME query ppid from OS, if different than original -> die
+
+            if (System.currentTimeMillis() > deadline) {
+                System.err.println("The process has been running for too long; the parent has probably died by now. Exiting")
+                exitProcess(408)
+            }
         }
     }
 
@@ -26,11 +34,16 @@ class SuicideThread private constructor() : Thread("Suicide") {
         private var installed = false
 
         @Synchronized
-        fun install() {
+        fun install(maxAliveMs: Long) {
             if (installed) return
             installed = true
 
-//            SuicideThread().start() TODO re-add
+            var deadline = System.currentTimeMillis() + maxAliveMs
+            if (deadline < 0) { // overflow
+                deadline = Long.MAX_VALUE
+            }
+
+            SuicideThread(deadline).start()
         }
     }
 }

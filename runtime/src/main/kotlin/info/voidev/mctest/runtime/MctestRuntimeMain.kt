@@ -7,6 +7,7 @@ import info.voidev.mctest.runtimesdk.proto.EngineService
 import info.voidev.mctest.runtimesdk.proto.RuntimeService
 import java.rmi.registry.LocateRegistry
 import java.rmi.server.UnicastRemoteObject
+import java.util.concurrent.TimeUnit
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.system.exitProcess
@@ -83,5 +84,5 @@ private fun setUpDieWithParent() {
         exitProcess(0)
     }
 
-    SuicideThread.install()
+    SuicideThread.install(TimeUnit.MINUTES.toMillis(60))
 }
