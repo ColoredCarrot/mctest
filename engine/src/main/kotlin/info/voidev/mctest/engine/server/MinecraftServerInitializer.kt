@@ -100,6 +100,7 @@ class MinecraftServerInitializer(private val dir: Path) : Runnable {
             "eula.txt",
             "server.properties",
             "spigot.yml",
+            "bukkit.yml",
             "plugins/PluginMetrics/config.yml",
         )
     }
