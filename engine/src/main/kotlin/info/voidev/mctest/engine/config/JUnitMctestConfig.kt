@@ -7,6 +7,7 @@ import org.junit.platform.engine.ConfigurationParameters
 import java.io.ObjectStreamException
 import java.io.Serializable
 import java.nio.file.Path
+import java.util.concurrent.TimeUnit
 import kotlin.io.path.div
 
 class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Serializable {
@@ -53,6 +54,10 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
         .get("mctest.testplayer.join.timeout.ms", String::toLong).orElse(null)
         ?: (10 * 1000L)
 
+    override val runtimeGlobalTimeoutMs: Long = params
+        .get("mctest.runtime.global.timeout.ms", String::toLong).orElse(null)
+        ?: TimeUnit.MINUTES.toMillis(30)
+
     fun export(): Map<String, String> = mapOf(
         "mctest.java" to java.toString(),
         "mctest.data.dir" to dataDirectory.toString(),
@@ -63,6 +68,7 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
         "mctest.runtime.bootstrap.timeout.ms" to runtimeBootstrapTimeoutMs.toString(),
         "mctest.server.start.timeout.ms" to serverStartTimeoutMs.toString(),
         "mctest.testplayer.join.timeout.ms" to testPlayerJoinTimeoutMs.toString(),
+        "mctest.runtime.global.timeout.ms" to runtimeGlobalTimeoutMs.toString(),
     )
 
     override fun toString() = export()
@@ -96,6 +102,7 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
             runtimeBootstrapTimeoutMs,
             serverStartTimeoutMs,
             testPlayerJoinTimeoutMs,
+            runtimeGlobalTimeoutMs,
         )
     }
 }

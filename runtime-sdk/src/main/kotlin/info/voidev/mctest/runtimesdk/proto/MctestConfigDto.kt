@@ -13,6 +13,7 @@ class MctestConfigDto(
     override val runtimeBootstrapTimeoutMs: Long,
     override val serverStartTimeoutMs: Long,
     override val testPlayerJoinTimeoutMs: Long,
+    override val runtimeGlobalTimeoutMs: Long,
 ) : MctestConfig, Serializable {
     override val java get() = Path(java_)
     override val dataDirectory get() = Path(dataDirectory_)

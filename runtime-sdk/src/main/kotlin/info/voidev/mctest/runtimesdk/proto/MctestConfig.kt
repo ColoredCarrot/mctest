@@ -72,4 +72,13 @@ interface MctestConfig {
      * and them appearing on the server (via `Bukkit.getPlayerExact()`).
      */
     val testPlayerJoinTimeoutMs: Long
+
+    /**
+     * Timeout in milliseconds during which the runtime must exit.
+     *
+     * This timeout is the last resort to terminate the runtime even if
+     * all other mechanisms of detecting the engine's death fail.
+     * Therefore, this value should have a rather high value (minutes to an hour).
+     */
+    val runtimeGlobalTimeoutMs: Long
 }

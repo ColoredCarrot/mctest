@@ -4,10 +4,10 @@ import info.voidev.mctest.runtime.classloading.MctestBootstrapClassLoader
 import info.voidev.mctest.runtime.classloading.MctestRuntimeClassLoader
 import info.voidev.mctest.runtime.proto.RuntimeServiceImpl
 import info.voidev.mctest.runtimesdk.proto.EngineService
+import info.voidev.mctest.runtimesdk.proto.MctestConfig
 import info.voidev.mctest.runtimesdk.proto.RuntimeService
 import java.rmi.registry.LocateRegistry
 import java.rmi.server.UnicastRemoteObject
-import java.util.concurrent.TimeUnit
 import kotlin.io.path.Path
 import kotlin.io.path.absolutePathString
 import kotlin.system.exitProcess
@@ -15,8 +15,6 @@ import kotlin.system.exitProcess
 class MctestRuntimeMain
 
 fun main(args: Array<String>) {
-    // Commit suicide as soon as our parent dies
-    setUpDieWithParent()
 
     if (args.size != 3) {
         System.err.println("Usage: <serverJarPath> <rmiPort> <testeePluginName>")
@@ -47,6 +45,10 @@ fun main(args: Array<String>) {
 
     val engine = registry.lookup(EngineService.NAME) as EngineService
     EngineHolder.INSTANCE = engine
+    val config = engine.getConfiguration()
+
+    // Commit suicide as soon as our parent dies
+    setUpDieWithParent(config)
 
     val applicationClassLoader = MctestRuntimeMain::class.java.classLoader
     val classLoader = MctestBootstrapClassLoader(serverJar, applicationClassLoader)
@@ -71,7 +73,7 @@ fun main(args: Array<String>) {
     }
 }
 
-private fun setUpDieWithParent() {
+private fun setUpDieWithParent(config: MctestConfig) {
     val parentProcess: ProcessHandle? = ProcessHandle.current().parent().orElse(null)
     if (parentProcess == null) {
         System.err.println("Must be created with a parent process")
@@ -84,5 +86,5 @@ private fun setUpDieWithParent() {
         exitProcess(0)
     }
 
-    SuicideThread.install(TimeUnit.MINUTES.toMillis(60))
+    SuicideThread.install(config.runtimeGlobalTimeoutMs)
 }
