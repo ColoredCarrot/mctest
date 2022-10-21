@@ -13,7 +13,7 @@ interface TestPlayerClient {
      * has been performed.
      * Usually, this is one server tick after the message has been processed.
      */
-    fun say(message: String)
+    suspend fun say(message: String)
 
     val receivedMessages: List<String>
 

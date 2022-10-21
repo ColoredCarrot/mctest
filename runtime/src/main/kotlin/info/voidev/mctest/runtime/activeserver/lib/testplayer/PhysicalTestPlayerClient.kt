@@ -69,8 +69,9 @@ class PhysicalTestPlayerClient(spec: TestPlayerSpec, port: Int, private val scop
         session.disconnect(NORMAL_DISCONNECT_REASON)
     }
 
-    override fun say(message: String) {
+    override suspend fun say(message: String) {
         session.send(ServerboundChatPacket(message))
+        scope.syncPackets()
     }
 
     val receivedPackets get() = recvPackets.toList()
