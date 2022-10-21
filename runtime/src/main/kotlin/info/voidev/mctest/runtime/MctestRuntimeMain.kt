@@ -27,6 +27,8 @@ fun main(args: Array<String>) {
     val rmiPort = args[1].toInt()
     val testeePluginName = args[2]
 
+    // A lightweight way to share data across the class loader barrier is via System.get/setProperty.
+    // See comment in ServerStartCallback.afterEnablePlugins for an explanation of this barrier.
     System.setProperty("mctest.rmi.port", rmiPort.toString())
     System.setProperty("mctest.testee.plugin.name", testeePluginName)
 
