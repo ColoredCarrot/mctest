@@ -75,12 +75,22 @@ dependencies {
 }
 ```
 
+## Contributing
+
+If you spot a bug, have an idea for a new feature or just find something that could use a little polish:
+Please don't hesitate to [open an issue](https://github.com/ColoredCarrot/mctest/issues/new)
+or get in touch privately.
+
+If you want to contribute some code: Great!
+I don't have a specific contribution process set-up just yet,
+but feel free to open a pull request.
+
 ## How it Works
 
 ***Note:**
 This section is a work-in-progress; details may be missing or outdated.
-If anything catches your eye, please don't hesitate
-to [open an issue](https://github.com/ColoredCarrot/mctest/issues/new).*
+If anything catches your eye, please [open an issue](https://github.com/ColoredCarrot/mctest/issues/new)
+(see "Contributing").*
 
 ### Terminology
 
