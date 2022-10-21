@@ -53,4 +53,7 @@ class EngineServiceImpl(private val config: MctestConfig) : EngineService {
         return javaClass.classLoader.getResource(name.replace('.', '/') + ".class") != null
     }
 
+    override fun getConfiguration(): MctestConfig {
+        return config
+    }
 }

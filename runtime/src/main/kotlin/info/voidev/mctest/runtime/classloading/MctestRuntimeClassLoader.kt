@@ -93,7 +93,8 @@ class MctestRuntimeClassLoader(urls: Array<URL>, parent: ClassLoader?) : URLClas
         depend on classes only present in the server JARs,
         so even those classes must be loaded by *this* class loader.
         Otherwise, they would attempt to load their dependency classes
-        through the application class loader, which would not find them.
+        through the application class loader, which would not find them,
+        because they could be needed to be fetched from the engine.
          */
 
         val cp = System.getProperty("java.class.path")?.ifBlank { null } ?: ""

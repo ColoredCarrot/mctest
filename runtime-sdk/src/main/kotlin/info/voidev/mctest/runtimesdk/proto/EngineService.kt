@@ -33,6 +33,9 @@ interface EngineService : Remote, Serializable {
     @Throws(RemoteException::class)
     fun maySendClass(name: String): Boolean
 
+    @Throws(RemoteException::class)
+    fun getConfiguration(): MctestConfig
+
     companion object {
         const val NAME = "engine"
     }

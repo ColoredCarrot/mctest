@@ -1,12 +1,17 @@
 package info.voidev.mctest.runtime.activeserver.lib.testplayer
 
 import info.voidev.mctest.api.TestScope
+import info.voidev.mctest.api.TimeoutValue
 import info.voidev.mctest.api.yieldTicksUntilNotNull
 import info.voidev.mctest.runtime.activeserver.testeePluginInstance
+import info.voidev.mctest.runtimesdk.proto.MctestConfig
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
+import java.time.Duration
 
-object TestPlayerService {
+class TestPlayerService(
+    private val mctestConfig: MctestConfig,
+) {
 
     suspend fun join(spec: TestPlayerSpec, scope: TestScope): PhysicalTestPlayer {
         require(Bukkit.isPrimaryThread())
@@ -19,8 +24,8 @@ object TestPlayerService {
             client.connect()
         })
 
-        //TODO make timeout configurable
-        val player = scope.yieldTicksUntilNotNull(20 * 10) { Bukkit.getPlayerExact(spec.name) }
+        val joinTimeout = TimeoutValue.RealTime(Duration.ofMillis(mctestConfig.testPlayerJoinTimeoutMs))
+        val player = scope.yieldTicksUntilNotNull(joinTimeout) { Bukkit.getPlayerExact(spec.name) }
 
         player.isOp = spec.op
         setUpPermissions(player, spec.permissions)

@@ -75,3 +75,4 @@ Bidirectional communication is now established.
 1. A server pool; a JVM process pool to parallelize test execution
 2. In the same vein, a server daemon running continuously across test runs to keep the server alive
 3. Integration with Testcontainers for testing plugins with DB connections
+4. Dynamically discover the required Spigot version from the testee plugin.yml

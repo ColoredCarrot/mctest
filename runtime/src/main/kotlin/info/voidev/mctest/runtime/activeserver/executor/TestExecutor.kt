@@ -3,10 +3,12 @@ package info.voidev.mctest.runtime.activeserver.executor
 import info.voidev.mctest.api.MCTest
 import info.voidev.mctest.api.TickFunctionScope
 import info.voidev.mctest.api.testplayer.TestPlayer
+import info.voidev.mctest.runtime.EngineHolder
 import info.voidev.mctest.runtime.activeserver.lib.parambind.CollectiveParamBinder
 import info.voidev.mctest.runtime.activeserver.lib.parambind.TestPlayerParamBinder
 import info.voidev.mctest.runtime.activeserver.lib.parambind.TestScopeParamBinder
 import info.voidev.mctest.runtime.activeserver.lib.testplayer.PhysicalTestPlayerClient
+import info.voidev.mctest.runtime.activeserver.lib.testplayer.TestPlayerService
 import info.voidev.mctest.runtime.activeserver.lib.tickfunction.launchTickFunction
 import info.voidev.mctest.runtime.activeserver.testeePluginInstance
 import info.voidev.mctest.runtimesdk.InvalidTestException
@@ -28,6 +30,10 @@ class TestExecutor {
     private val instanceCache = TestClassInstanceCache()
 
     private val paramBinder = CollectiveParamBinder(listOf(TestScopeParamBinder(), TestPlayerParamBinder()))
+
+    private val mctestConfig by lazy { EngineHolder.INSTANCE.getConfiguration() }
+
+    private val testPlayerService by lazy(LazyThreadSafetyMode.PUBLICATION) { TestPlayerService(mctestConfig) }
 
     fun executeTestMethod(testClassName: String, methodName: String, methodDescriptor: String) {
         require(!Bukkit.isPrimaryThread())
@@ -70,7 +76,7 @@ class TestExecutor {
         instance: Any?,
         isSuspend: Boolean,
     ) {
-        val scopeBuilder = TestScopeBuilder(this)
+        val scopeBuilder = TestScopeBuilder(this, testPlayerService)
 
         // Bind non-continuation method parameters
         val paramsExceptContinuation =

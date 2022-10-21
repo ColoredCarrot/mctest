@@ -66,4 +66,10 @@ interface MctestConfig {
      * which can take multiple minutes.
      */
     val serverStartTimeoutMs: Long
+
+    /**
+     * Timeout in milliseconds between a test player connecting
+     * and them appearing on the server (via `Bukkit.getPlayerExact()`).
+     */
+    val testPlayerJoinTimeoutMs: Long
 }

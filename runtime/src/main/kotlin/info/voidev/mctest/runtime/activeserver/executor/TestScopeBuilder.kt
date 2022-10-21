@@ -9,12 +9,13 @@ import info.voidev.mctest.runtime.activeserver.lib.testplayer.TestPlayerSpec
 
 class TestScopeBuilder(
     private val tickScope: TickFunctionScope,
+    private val testPlayerService: TestPlayerService,
 ) : TestScope, TickFunctionScope by tickScope {
 
     private val testPlayers = ArrayList<PhysicalTestPlayer>()
 
     suspend fun newTestPlayer(spec: TestPlayerSpec) =
-        TestPlayerService.join(spec, this).also(testPlayers::add)
+        testPlayerService.join(spec, this).also(testPlayers::add)
 
     override suspend fun syncPackets() {
         for (testPlayer in testPlayers) {

@@ -2,7 +2,6 @@ package info.voidev.mctest.api
 
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
-import kotlin.time.Duration
 
 interface TickFunctionScope {
     /**
@@ -28,17 +27,21 @@ suspend inline fun TickFunctionScope.yieldTicksUntil(condition: () -> Boolean) =
  * For example, you might want to wait
  * until the server or client has received an expected packet.
  */
-suspend inline fun <T : Any> TickFunctionScope.yieldTicksUntilNotNull(timeoutTicks: Int = 5 * 20, getter: () -> T?): T {
-    var elapsedTicks = 0
+suspend inline fun <R : Any, T> TickFunctionScope.yieldTicksUntilNotNull(
+    timeout: TimeoutValue<T>,
+    getter: () -> R?,
+): R {
+    var timeoutTracker = timeout.begin()
     var value = getter()
     while (value == null) {
-        if (elapsedTicks >= timeoutTicks) {
+        if (timeout.hasElapsed(timeoutTracker)) {
             throw TimeoutException()
         }
 
         yieldTick()
+        timeoutTracker = timeout.tick(timeoutTracker)
+
         value = getter()
-        ++elapsedTicks
     }
 
     return value
@@ -49,9 +52,6 @@ suspend fun TickFunctionScope.yieldTicksFor(time: Long, unit: TimeUnit) {
     val startTime = System.currentTimeMillis()
     yieldTicksUntil { System.currentTimeMillis() - startTime >= waitMillis }
 }
-
-suspend fun TickFunctionScope.yieldTicksFor(duration: Duration) =
-    yieldTicksFor(duration.inWholeMilliseconds, TimeUnit.MILLISECONDS)
 
 suspend fun TickFunctionScope.yieldTicks(n: Int) {
     repeat(n) {
