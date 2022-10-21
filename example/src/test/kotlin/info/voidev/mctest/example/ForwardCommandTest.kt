@@ -62,6 +62,19 @@ class ForwardCommandTest {
         assertThat(player.location).isCloseTo(oldLocation, withinEpsilon)
     }
 
+    @MCTest
+    suspend fun `relative tp`(player: TestPlayer) {
+        // Given:
+        val oldLocation = player.location
+
+        // When:
+        player.client.say("/tp ~1 ~ ~")
+
+        // Then:
+        val expectedLocation = oldLocation.clone().add(1.0, 0.0, 0.0)
+        assertThat(player.location).isCloseTo(expectedLocation, within(1e-7))
+    }
+
     companion object {
         private const val EPSILON = 1e-7
 
