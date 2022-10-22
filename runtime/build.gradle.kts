@@ -1,7 +1,7 @@
 plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("java")
-    kotlin("jvm") version "1.6.21"
+    java
+    kotlin("jvm")
 }
 
 group = "info.voidev.mctest"
@@ -25,11 +25,6 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
 }
 
 tasks.jar {

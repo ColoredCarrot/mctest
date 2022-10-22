@@ -1,6 +1,6 @@
 plugins {
-    id("java")
-    kotlin("jvm") version "1.6.21"
+    java
+    kotlin("jvm")
 }
 
 group = "info.voidev.mctest"
