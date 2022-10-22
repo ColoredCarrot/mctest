@@ -1,6 +1,7 @@
 plugins {
     java
     kotlin("jvm")
+    `maven-publish`
 }
 
 group = "info.voidev.mctest"
@@ -15,4 +16,12 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("runtime-sdk") {
+            from(components["java"])
+        }
+    }
 }

@@ -2,6 +2,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
     java
     kotlin("jvm")
+    `maven-publish`
 }
 
 group = "info.voidev.mctest"
@@ -33,5 +34,13 @@ tasks.jar {
             "Premain-Class" to "info.voidev.mctest.runtime.agent.MctestRuntimeAgent",
             "Main-Class" to "info.voidev.mctest.runtime.MctestRuntimeMainKt",
         )
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("runtime") {
+            project.shadow.component(this)
+        }
     }
 }
