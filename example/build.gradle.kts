@@ -26,7 +26,7 @@ tasks.getByName<KotlinCompile>("compileTestKotlin") {
     }
 }
 
-tasks.getByName<Test>("test") {
+tasks.test {
     useJUnitPlatform()
 
     // Configuration parameters for MCTest

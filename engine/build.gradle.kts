@@ -45,7 +45,7 @@ tasks.withType<org.gradle.jvm.tasks.Jar> {
 //    }
 //}
 
-tasks.getByName<Test>("test") {
+tasks.test {
     useJUnitPlatform()
 }
 
