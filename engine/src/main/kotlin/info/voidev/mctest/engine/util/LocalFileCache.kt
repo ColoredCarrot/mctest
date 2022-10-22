@@ -12,10 +12,10 @@ class LocalFileCache(private val dir: Path) {
 
     private val base32 = Base32()
 
-    fun getCached(uri: URI, filename: String = getFilename(uri)): Path {
+    fun getCached(uri: URI, filename: String = getFilename(uri), forceRefresh: Boolean = false): Path {
         val localCopy = dir.resolve(filename)
 
-        if (!localCopy.exists()) {
+        if (forceRefresh || !localCopy.exists()) {
             download(uri, localCopy)
         }
 
@@ -40,7 +40,7 @@ class LocalFileCache(private val dir: Path) {
         dir.createDirectories()
 
         uri.toURL().openStream().use { istream ->
-            target.outputStream(StandardOpenOption.CREATE_NEW).use { ostream ->
+            target.outputStream(StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING).use { ostream ->
                 istream.transferTo(ostream)
             }
         }

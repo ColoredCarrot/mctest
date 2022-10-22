@@ -87,7 +87,7 @@ class TestableMinecraftServer(private val config: MctestConfig) {
         // Might be bundled, i.e. on our classpath
         javaClass.classLoader.getResource("runtime.jar")?.also { url ->
             val cache = LocalFileCache(config.dataDirectory / "runtime")
-            return cache.getCached(url.toURI(), "runtime.jar")
+            return cache.getCached(url.toURI(), "runtime.jar", forceRefresh = true)
         }
 
         // TODO download runtime JAR in case this is a "light engine", i.e. without the bundled runtime
