@@ -1,3 +1,4 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -36,6 +37,12 @@ tasks.test {
         "mctest.java" to mctestJava.orEmpty(),
         "mctest.server.dir" to project.buildDir.resolve("server-dir").absolutePath,
     )
+
+    testLogging {
+        events("passed", "skipped", "failed")
+        showStackTraces = true
+        exceptionFormat = TestExceptionFormat.FULL
+    }
 }
 
 tasks.getByName<ProcessResources>("processResources") {
