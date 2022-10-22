@@ -8,6 +8,7 @@ import java.io.ObjectStreamException
 import java.io.Serializable
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
+import kotlin.io.path.Path
 import kotlin.io.path.div
 
 class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Serializable {
@@ -15,28 +16,28 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
     override val java = params
         .get("mctest.java").orElse(null)
         ?.ifEmpty { null }
-        ?.let(Path::of)
+        ?.let(::Path)
         ?: SystemInfo.findJava()
         ?: throw MCTestConfigException("mctest.java")
 
     override val dataDirectory = params
-        .get("mctest.data.dir", Path::of).orElse(null)
+        .get("mctest.data.dir", ::Path).orElse(null)
         ?: getDefaultDataDir()
         ?: throw MCTestConfigException("mctest.data.dir")
 
     override val runtimeJar = params
         .get("mctest.runtime.jar").orElse(null)
         ?.ifEmpty { null }
-        ?.let(Path::of)
+        ?.let(::Path)
 
     override val serverJarCacheDirectory = params
-        .get("mctest.server.jar.cache", Path::of).orElse(null)
+        .get("mctest.server.jar.cache", ::Path).orElse(null)
         ?: (dataDirectory / "serverjars")
 
     override val serverDirectory = params
         .get("mctest.server.dir").orElse(null)
         ?.takeUnless { it == "TEMP" || it == "TMP" || it.isEmpty() }
-        ?.let(Path::of)
+        ?.let(::Path)
 
     override val rmiPort: Int = params
         .get("mctest.rmi.port", String::toInt).orElse(null)
