@@ -64,14 +64,14 @@ Using `build.gradle.kts`:
 ```kotlin
 repositories {
     /* ... */
-    maven("https://maven.pkg.github.com/ColoredCarrot/mctest")
+    maven("https://jitpack.io")
 }
 
 dependencies {
     /* ... */
-    testImplementation("info.voidev.mctest:api:0.1.0")
-    testImplementation("info.voidev.mctest:api-assertj:0.1.0") // Optional
-    testRuntimeOnly("info.voidev.mctest:engine:0.1.0")
+    testImplementation("com.github.ColoredCarrot.mctest:api:0.1.0")
+    testImplementation("com.github.ColoredCarrot.mctest:api-assertj:0.1.0") // Optional
+    testRuntimeOnly("com.github.ColoredCarrot.mctest:engine:0.1.0")
 }
 ```
 
