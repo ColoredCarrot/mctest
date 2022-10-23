@@ -173,7 +173,8 @@ some form of IPC for all other cases.
 ### Ideas for the Future
 
 1. Support plugin dependencies declared in `plugin.yml`
-2. A server pool; a JVM process pool to parallelize test execution
-3. In the same vein, a server daemon running continuously across test runs to keep the server alive
-4. Integration with Testcontainers for testing plugins with DB connections
-5. Dynamically discover the required Spigot version from the testee plugin.yml
+2. Parallelize test execution (configurable via annotations)
+3. A server pool; a JVM process pool to parallelize test execution
+4. In the same vein, a server daemon running continuously across test runs to keep the server alive
+5. Integration with Testcontainers for testing plugins with DB connections
+6. Dynamically discover the required Spigot version from the testee plugin.yml
