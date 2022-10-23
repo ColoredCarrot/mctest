@@ -69,4 +69,14 @@ object CommandArgumentSplitter {
 
         return result
     }
+
+    fun join(args: List<String>): String {
+        return args.joinToString(" ") { arg ->
+            var res = arg.replace("\"", "\"\"")
+            if (res.any { it.isWhitespace() }) {
+                res = '"' + res + '"'
+            }
+            res
+        }
+    }
 }

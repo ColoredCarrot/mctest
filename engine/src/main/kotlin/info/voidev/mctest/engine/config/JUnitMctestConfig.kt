@@ -7,6 +7,7 @@ import info.voidev.mctest.runtimesdk.proto.MctestConfigDto
 import org.junit.platform.engine.ConfigurationParameters
 import java.io.ObjectStreamException
 import java.io.Serializable
+import java.net.URI
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
 import kotlin.io.path.Path
@@ -30,6 +31,9 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
         .get("mctest.runtime.jar").orElse(null)
         ?.ifEmpty { null }
         ?.let(::Path)
+
+    override val downloadableServerJar: URI? = params
+        .get("mctest.server.jar.url", ::URI).orElse(null)
 
     override val serverJarCacheDirectory = params
         .get("mctest.server.jar.cache", ::Path).orElse(null)
@@ -68,9 +72,11 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
         "mctest.java" to java.toString(),
         "mctest.data.dir" to dataDirectory.toString(),
         "mctest.runtime.jar" to runtimeJar.toString(),
+        "mctest.server.jar.url" to downloadableServerJar.toString(),
         "mctest.server.jar.cache" to serverJarCacheDirectory.toString(),
         "mctest.server.dir" to serverDirectory.toString(),
         "mctest.rmi.port" to rmiPort.toString(),
+        "mctest.runtime.jvm.args" to CommandArgumentSplitter.join(runtimeJvmArgs),
         "mctest.runtime.bootstrap.timeout.ms" to runtimeBootstrapTimeoutMs.toString(),
         "mctest.server.start.timeout.ms" to serverStartTimeoutMs.toString(),
         "mctest.testplayer.join.timeout.ms" to testPlayerJoinTimeoutMs.toString(),
@@ -102,6 +108,7 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
             java.toString(),
             dataDirectory.toString(),
             runtimeJar?.toString(),
+            downloadableServerJar,
             serverJarCacheDirectory.toString(),
             serverDirectory?.toString(),
             rmiPort,

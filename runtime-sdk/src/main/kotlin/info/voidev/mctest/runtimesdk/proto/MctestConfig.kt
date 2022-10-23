@@ -1,5 +1,6 @@
 package info.voidev.mctest.runtimesdk.proto
 
+import java.net.URI
 import java.nio.file.Path
 
 interface MctestConfig {
@@ -29,6 +30,15 @@ interface MctestConfig {
      * and it will be cached in the data directory.
      */
     val runtimeJar: Path?
+
+    /**
+     * URL that the Minecraft server JAR can be downloaded from.
+     *
+     * Can be an `http(s)://`, a `file://`, or any other kind of URL.
+     *
+     * Setting this value overrides any auto-detection mechanisms.
+     */
+    val downloadableServerJar: URI?
 
     /**
      * Absolute path to the directory used to cache server JARs.

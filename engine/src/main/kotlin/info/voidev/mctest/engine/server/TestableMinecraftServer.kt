@@ -42,9 +42,7 @@ class TestableMinecraftServer(private val config: MctestConfig) {
         val runtimeJar = findRuntimeJar().toAbsolutePath()
         validateJar(runtimeJar, "Runtime JAR")
 
-        val serverJarCache = LocalFileCache(config.serverJarCacheDirectory)
-        val originalServerJar = ServerJarGetter.get()
-        val serverJar = serverJarCache.getCached(originalServerJar)
+        val serverJar = findServerJar().toAbsolutePath()
         validateJar(serverJar, "Server JAR")
 
         val process = ProcessBuilder(
@@ -98,6 +96,12 @@ class TestableMinecraftServer(private val config: MctestConfig) {
 
         // TODO download runtime JAR in case this is a "light engine", i.e. without the bundled runtime
         throw MCTestConfigException("Missing runtime.jar. Configure it via mctest.runtime.jar or use an engine with bundled runtime.")
+    }
+
+    private fun findServerJar(): Path {
+        val downloadUri = config.downloadableServerJar ?: ServerJarGetter.get()
+
+        return LocalFileCache(config.serverJarCacheDirectory).getCached(downloadUri)
     }
 
     private fun validateJar(path: Path, name: String) {

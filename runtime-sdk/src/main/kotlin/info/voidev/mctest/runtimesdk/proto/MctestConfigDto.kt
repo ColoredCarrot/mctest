@@ -1,12 +1,14 @@
 package info.voidev.mctest.runtimesdk.proto
 
 import java.io.Serializable
+import java.net.URI
 import kotlin.io.path.Path
 
 class MctestConfigDto(
     private val java_: String,
     private val dataDirectory_: String,
     private val runtimeJar_: String?,
+    override val downloadableServerJar: URI?,
     private val serverJarCacheDirectory_: String,
     private val serverDirectory_: String?,
     override val rmiPort: Int,

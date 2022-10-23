@@ -45,6 +45,16 @@ internal class CommandArgumentSplitterTest {
         }
     }
 
+    @Test
+    fun `join empty`() {
+        assertEquals("", splitter.join(emptyList()))
+    }
+
+    @Test
+    fun `join multiple`() {
+        assertEquals("""foo "a b"" c" bar""", splitter.join(listOf("foo", "a b\" c", "bar")))
+    }
+
     companion object {
         private fun cartesianProduct(
             fst: List<Pair<List<String>, String>>,
