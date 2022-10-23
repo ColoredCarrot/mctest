@@ -36,7 +36,6 @@ tasks.test {
     systemProperties(
         "mctest.java" to mctestJava.orEmpty(),
         "mctest.server.dir" to project.buildDir.resolve("server-dir").absolutePath,
-        "mctest.server.version" to "1.18.2",
     )
 
     testLogging {

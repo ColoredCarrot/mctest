@@ -20,6 +20,7 @@ import kotlin.io.path.isRegularFile
 class TestableMinecraftServer<V : MinecraftPlatform.Version<V>>(
     private val config: MctestConfig,
     private val minecraftPlatform: MinecraftPlatform<V>,
+    private val allowableVersionRange: Pair<V?, V?>,
 ) {
 
     private val serverDir = config.serverDirectory ?: TemporaryDirectories.create("mctest-server-")
@@ -108,14 +109,36 @@ class TestableMinecraftServer<V : MinecraftPlatform.Version<V>>(
 
         // No specifically configured download URL?
         if (downloadUri == null) {
-            // TODO: If no version configured, infer from plugin.yml or from version ranges in @MCTest annotations
-            val version = minecraftPlatform.resolveVersion(config.minecraftVersion!!)
+            val version = determineMinecraftVersion()
             val installer = minecraftPlatform.availableInstallers.first() // TODO: Make installer configurable; use a retry mechanism/try different installers
             downloadUri = installer.install(version)
             filename = version.filename
         }
 
         return LocalFileCache(config.serverJarCacheDirectory).getCached(downloadUri, filename)
+    }
+
+    private fun determineMinecraftVersion(): V {
+        // TODO: Consider plugin.yml api-version
+        val (min, max) = allowableVersionRange
+
+        // Determine from config
+        config.minecraftVersion?.let(minecraftPlatform::resolveVersion)?.also { version ->
+            if (min != null && version < min || max != null && version > max) {
+                throw RuntimeException("Configured Minecraft version ($version) conflicts with inferred allowable version range")
+            }
+
+            return version
+        }
+
+        // Determine from @MCVersion annotations
+        max?.also { return it }
+        min?.also { return it }
+
+        // No way to infer a version
+        System.err.println("Failed to infer a Minecraft version; using platform default (${minecraftPlatform.defaultVersion}).")
+        System.err.println("Please consider specifying a version with @MCVersion or mctest.server.version.")
+        return minecraftPlatform.defaultVersion
     }
 
     private fun validateJar(path: Path, name: String) {

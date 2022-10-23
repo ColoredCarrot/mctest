@@ -7,6 +7,8 @@ class SpigotPlatform : MinecraftPlatform<SpigotPlatform.Version> {
 
     override fun resolveVersion(version: String) = Version.parse(version)
 
+    override val defaultVersion get() = resolveVersion("1.18.2")
+
     override val availableInstallers =
         listOf(
             GetBukkitInstaller(),

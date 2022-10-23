@@ -7,6 +7,7 @@ import info.voidev.mctest.engine.discovery.ClassTestDescriptor
 import info.voidev.mctest.engine.discovery.MethodTestDescriptor
 import info.voidev.mctest.engine.server.TestableMinecraftServer
 import info.voidev.mctest.engine.server.TestableServerSession
+import info.voidev.mctest.engine.server.platform.MinecraftPlatform
 import info.voidev.mctest.engine.server.platform.spigot.SpigotPlatform
 import info.voidev.mctest.engine.util.unwrapRmiExceptions
 import org.junit.platform.engine.ConfigurationParameters
@@ -26,6 +27,8 @@ class McTestExecutor(
 
     private val config = JUnitMctestConfig(params)
 
+    private val mcVersionInference = MinecraftVersionInference()
+
     fun execute() {
         listener.executionStarted(root)
 
@@ -35,9 +38,14 @@ class McTestExecutor(
             return
         }
 
+        val minecraftPlatform = SpigotPlatform()
+
+        val allowableVersionRange = mcVersionInference.calculateAllowableRange(root, minecraftPlatform)
+        checkVersionRangeNotEmpty(allowableVersionRange)
+
         var server: TestableMinecraftServer<SpigotPlatform.Version>? = null
         try {
-            server = TestableMinecraftServer(config, SpigotPlatform())
+            server = TestableMinecraftServer(config, minecraftPlatform, allowableVersionRange)
             server.start()
 
             val serverSession = server.requireActiveSession()
@@ -107,5 +115,15 @@ class McTestExecutor(
     private fun getDisabledReason(testMethodOrClass: AnnotatedElement): String? {
         val annot = testMethodOrClass.getAnnotation(Disabled::class.java) ?: return null
         return annot.value.trim().ifEmpty { "$testMethodOrClass is @Disabled" }
+    }
+
+    private fun <V : MinecraftPlatform.Version<V>> checkVersionRangeNotEmpty(range: Pair<V?, V?>) {
+        val (min, max) = range
+        if (min != null && max != null && min > max) {
+            // TODO: Instead of giving up, we can divide all tests into test groups,
+            //  each of which will receive a fresh server with a different version.
+            //  This would allow parallel execution.
+            throw RuntimeException("Conflicting Minecraft version requirements")
+        }
     }
 }

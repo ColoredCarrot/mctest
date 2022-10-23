@@ -7,7 +7,7 @@ import org.junit.platform.engine.support.descriptor.ClassSource
 class ClassTestDescriptor(
     uniqueId: UniqueId,
     val testClass: Class<*>,
-) : McTestDescriptor(uniqueId, testClass.simpleName, ClassSource.from(testClass)) {
+) : McTestDescriptor(uniqueId, testClass.simpleName, testClass, ClassSource.from(testClass)) {
 
     override fun getType() = TestDescriptor.Type.CONTAINER
 

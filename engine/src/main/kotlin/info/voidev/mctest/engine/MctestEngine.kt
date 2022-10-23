@@ -23,6 +23,9 @@ class MctestEngine : TestEngine {
         // Populate the root descriptor by running our different selector resolvers
         DiscoverySelectorResolver.resolve(discoveryRequest, descriptor)
 
+        // TODO: If running Minecraft version-matrix tests, for each discovered test,
+        //  generate one for each version
+
         return descriptor
     }
 

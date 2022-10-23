@@ -23,6 +23,7 @@ A testing framework for Spigot plugins, implemented as a Jupiter (JUnit 5) test 
 From **Kotlin**, using a physical test player:
 
 ```kotlin
+@MCVersion(min = "1.18") // Version will be inferred from all @MCVersion annotations
 class TpCommandTest {
     @MCTest
     suspend fun `teleport one block forward`(player: TestPlayer) {

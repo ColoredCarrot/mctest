@@ -12,6 +12,12 @@ interface MinecraftPlatform<V : MinecraftPlatform.Version<V>> {
     fun resolveVersion(version: String): V
 
     /**
+     * If MCTest is unable to infer an appropriate version,
+     * it uses the platform's default.
+     */
+    val defaultVersion: V
+
+    /**
      * List of available installers for the server JAR.
      *
      * An installer's index in this list indicates its preference:

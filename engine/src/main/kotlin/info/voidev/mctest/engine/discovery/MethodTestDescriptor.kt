@@ -11,7 +11,7 @@ import java.lang.reflect.Method
 class MethodTestDescriptor(
     uniqueId: UniqueId,
     val method: Method,
-) : McTestDescriptor(uniqueId, method.name, MethodSource.from(method)) {
+) : McTestDescriptor(uniqueId, method.name, method, MethodSource.from(method)) {
 
     override fun getType() = TestDescriptor.Type.TEST
 
