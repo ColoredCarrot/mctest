@@ -28,6 +28,12 @@ class McTestExecutor(
     fun execute() {
         listener.executionStarted(root)
 
+        // We don't need to start a server if there's no tests to be executed
+        if (root.children.isEmpty()) {
+            listener.executionFinished(root, TestExecutionResult.successful())
+            return
+        }
+
         var server: TestableMinecraftServer? = null
         try {
             server = TestableMinecraftServer(config)
