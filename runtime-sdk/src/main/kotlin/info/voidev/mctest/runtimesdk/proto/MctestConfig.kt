@@ -32,6 +32,15 @@ interface MctestConfig {
     val runtimeJar: Path?
 
     /**
+     * The version of the Minecraft server to install and use.
+     *
+     * If `null`, an appropriate version will be determined automatically.
+     *
+     * Example values: `1.19`, `1.18.2`
+     */
+    val minecraftVersion: String?
+
+    /**
      * URL that the Minecraft server JAR can be downloaded from.
      *
      * Can be an `http(s)://`, a `file://`, or any other kind of URL.

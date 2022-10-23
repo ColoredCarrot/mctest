@@ -2,6 +2,7 @@ package info.voidev.mctest.engine.server
 
 import info.voidev.mctest.engine.config.MCTestConfigException
 import info.voidev.mctest.engine.proto.EngineServiceImpl
+import info.voidev.mctest.engine.server.platform.MinecraftPlatform
 import info.voidev.mctest.engine.util.LocalFileCache
 import info.voidev.mctest.engine.util.TemporaryDirectories
 import info.voidev.mctest.engine.util.startDaemon
@@ -16,7 +17,10 @@ import kotlin.io.path.div
 import kotlin.io.path.extension
 import kotlin.io.path.isRegularFile
 
-class TestableMinecraftServer(private val config: MctestConfig) {
+class TestableMinecraftServer<V : MinecraftPlatform.Version<V>>(
+    private val config: MctestConfig,
+    private val minecraftPlatform: MinecraftPlatform<V>,
+) {
 
     private val serverDir = config.serverDirectory ?: TemporaryDirectories.create("mctest-server-")
 
@@ -99,9 +103,19 @@ class TestableMinecraftServer(private val config: MctestConfig) {
     }
 
     private fun findServerJar(): Path {
-        val downloadUri = config.downloadableServerJar ?: ServerJarGetter.get()
+        var downloadUri = config.downloadableServerJar
+        var filename: String? = null
 
-        return LocalFileCache(config.serverJarCacheDirectory).getCached(downloadUri)
+        // No specifically configured download URL?
+        if (downloadUri == null) {
+            // TODO: If no version configured, infer from plugin.yml or from version ranges in @MCTest annotations
+            val version = minecraftPlatform.resolveVersion(config.minecraftVersion!!)
+            val installer = minecraftPlatform.availableInstallers.first() // TODO: Make installer configurable; use a retry mechanism/try different installers
+            downloadUri = installer.install(version)
+            filename = version.filename
+        }
+
+        return LocalFileCache(config.serverJarCacheDirectory).getCached(downloadUri, filename)
     }
 
     private fun validateJar(path: Path, name: String) {

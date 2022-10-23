@@ -32,6 +32,10 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
         ?.ifEmpty { null }
         ?.let(::Path)
 
+    override val minecraftVersion: String? = params
+        .get("mctest.server.version").orElse(null)
+        ?.ifEmpty { null }
+
     override val downloadableServerJar: URI? = params
         .get("mctest.server.jar.url", ::URI).orElse(null)
 
@@ -72,6 +76,7 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
         "mctest.java" to java.toString(),
         "mctest.data.dir" to dataDirectory.toString(),
         "mctest.runtime.jar" to runtimeJar.toString(),
+        "mctest.server.version" to minecraftVersion.orEmpty(),
         "mctest.server.jar.url" to downloadableServerJar.toString(),
         "mctest.server.jar.cache" to serverJarCacheDirectory.toString(),
         "mctest.server.dir" to serverDirectory.toString(),
@@ -108,6 +113,7 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
             java.toString(),
             dataDirectory.toString(),
             runtimeJar?.toString(),
+            minecraftVersion,
             downloadableServerJar,
             serverJarCacheDirectory.toString(),
             serverDirectory?.toString(),

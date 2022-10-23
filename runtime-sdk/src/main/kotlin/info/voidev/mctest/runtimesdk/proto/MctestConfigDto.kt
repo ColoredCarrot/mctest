@@ -8,6 +8,7 @@ class MctestConfigDto(
     private val java_: String,
     private val dataDirectory_: String,
     private val runtimeJar_: String?,
+    override val minecraftVersion: String?,
     override val downloadableServerJar: URI?,
     private val serverJarCacheDirectory_: String,
     private val serverDirectory_: String?,

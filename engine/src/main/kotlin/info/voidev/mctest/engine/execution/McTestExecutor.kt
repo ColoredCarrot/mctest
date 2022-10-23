@@ -7,6 +7,7 @@ import info.voidev.mctest.engine.discovery.ClassTestDescriptor
 import info.voidev.mctest.engine.discovery.MethodTestDescriptor
 import info.voidev.mctest.engine.server.TestableMinecraftServer
 import info.voidev.mctest.engine.server.TestableServerSession
+import info.voidev.mctest.engine.server.platform.spigot.SpigotPlatform
 import info.voidev.mctest.engine.util.unwrapRmiExceptions
 import org.junit.platform.engine.ConfigurationParameters
 import org.junit.platform.engine.EngineExecutionListener
@@ -34,9 +35,9 @@ class McTestExecutor(
             return
         }
 
-        var server: TestableMinecraftServer? = null
+        var server: TestableMinecraftServer<SpigotPlatform.Version>? = null
         try {
-            server = TestableMinecraftServer(config)
+            server = TestableMinecraftServer(config, SpigotPlatform())
             server.start()
 
             val serverSession = server.requireActiveSession()
