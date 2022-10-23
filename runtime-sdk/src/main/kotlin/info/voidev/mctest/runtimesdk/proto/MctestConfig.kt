@@ -48,6 +48,11 @@ interface MctestConfig {
     val rmiPort: Int
 
     /**
+     * Additional JVM arguments passed to the runtime.
+     */
+    val runtimeJvmArgs: List<String>
+
+    /**
      * Timeout in milliseconds during which the runtime must finish bootstrapping.
      *
      * Bootstrapping involves setting up bidirectional communication between runtime and engine

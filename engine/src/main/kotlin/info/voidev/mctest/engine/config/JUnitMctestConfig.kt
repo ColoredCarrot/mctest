@@ -1,5 +1,6 @@
 package info.voidev.mctest.engine.config
 
+import info.voidev.mctest.engine.util.CommandArgumentSplitter
 import info.voidev.mctest.engine.util.SystemInfo
 import info.voidev.mctest.runtimesdk.proto.MctestConfig
 import info.voidev.mctest.runtimesdk.proto.MctestConfigDto
@@ -42,6 +43,10 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
     override val rmiPort: Int = params
         .get("mctest.rmi.port", String::toInt).orElse(null)
         ?: 1099
+
+    override val runtimeJvmArgs: List<String> = params
+        .get("mctest.runtime.jvm.args", CommandArgumentSplitter::split).orElse(null)
+        .orEmpty()
 
     override val runtimeBootstrapTimeoutMs: Long = params
         .get("mctest.runtime.bootstrap.timeout.ms", String::toLong).orElse(null)
@@ -100,6 +105,7 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
             serverJarCacheDirectory.toString(),
             serverDirectory?.toString(),
             rmiPort,
+            runtimeJvmArgs,
             runtimeBootstrapTimeoutMs,
             serverStartTimeoutMs,
             testPlayerJoinTimeoutMs,

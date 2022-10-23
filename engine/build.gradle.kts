@@ -18,7 +18,9 @@ dependencies {
     implementation("commons-codec:commons-codec:1.15")
     implementation("org.ow2.asm:asm:9.4") // we only need this for Type.getMethodDescriptor -> might get rid of this in the future
 
+    // The engine itself contains normal unit tests powered by the Jupiter engine
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.0")
 
     theRuntime(project(":runtime", "shadow"))

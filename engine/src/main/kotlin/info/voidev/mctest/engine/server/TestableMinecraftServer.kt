@@ -49,7 +49,8 @@ class TestableMinecraftServer(private val config: MctestConfig) {
 
         val process = ProcessBuilder(
             config.java.absolutePathString(),
-            "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005",
+            *config.runtimeJvmArgs.toTypedArray(),
+//            "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005",
 //            "-javaagent:${runtimeJar.absolutePathString()}",
             "-ea",
             "-jar", runtimeJar.absolutePathString(),

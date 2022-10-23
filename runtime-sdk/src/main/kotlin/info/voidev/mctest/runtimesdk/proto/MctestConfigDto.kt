@@ -10,6 +10,7 @@ class MctestConfigDto(
     private val serverJarCacheDirectory_: String,
     private val serverDirectory_: String?,
     override val rmiPort: Int,
+    override val runtimeJvmArgs: List<String>,
     override val runtimeBootstrapTimeoutMs: Long,
     override val serverStartTimeoutMs: Long,
     override val testPlayerJoinTimeoutMs: Long,
