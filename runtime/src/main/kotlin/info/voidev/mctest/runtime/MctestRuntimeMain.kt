@@ -3,6 +3,7 @@ package info.voidev.mctest.runtime
 import info.voidev.mctest.runtime.classloading.MctestBootstrapClassLoader
 import info.voidev.mctest.runtime.classloading.MctestRuntimeClassLoader
 import info.voidev.mctest.runtime.proto.RuntimeServiceImpl
+import info.voidev.mctest.runtimesdk.RuntimeExitCodes
 import info.voidev.mctest.runtimesdk.proto.EngineService
 import info.voidev.mctest.runtimesdk.proto.MctestConfig
 import info.voidev.mctest.runtimesdk.proto.RuntimeService
@@ -15,10 +16,15 @@ import kotlin.system.exitProcess
 class MctestRuntimeMain
 
 fun main(args: Array<String>) {
-
     if (args.size != 3) {
         System.err.println("Usage: <serverJarPath> <rmiPort> <testeePluginName>")
-        exitProcess(1)
+        exitProcess(RuntimeExitCodes.USAGE)
+    }
+
+    // We need at least Java 17
+    if (Runtime.version() < Runtime.Version.parse("17")) {
+        System.err.println("Java version is too old (need at least 17): ${Runtime.version()}")
+        exitProcess(RuntimeExitCodes.JAVA_TOO_OLD)
     }
 
     System.err.println("Bootstrapping MCTest Runtime")
@@ -79,13 +85,13 @@ private fun setUpDieWithParent(config: MctestConfig) {
     val parentProcess: ProcessHandle? = ProcessHandle.current().parent().orElse(null)
     if (parentProcess == null) {
         System.err.println("Must be created with a parent process")
-        exitProcess(1)
+        exitProcess(RuntimeExitCodes.NO_PARENT_PROCESS)
     }
 
     parentProcess.onExit().handleAsync { _, _ ->
         System.err.println("Parent has died, exiting")
         // TODO: Figure out if it's worth it to Bukkit.shutdown() normally
-        exitProcess(0)
+        exitProcess(RuntimeExitCodes.PARENT_HAS_DIED)
     }
 
     SuicideThread.install(config.runtimeGlobalTimeoutMs)

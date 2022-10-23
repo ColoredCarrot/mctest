@@ -1,5 +1,6 @@
 package info.voidev.mctest.runtime
 
+import info.voidev.mctest.runtimesdk.RuntimeExitCodes
 import kotlin.system.exitProcess
 
 class SuicideThread private constructor(private val deadline: Long) : Thread("Suicide") {
@@ -25,7 +26,7 @@ class SuicideThread private constructor(private val deadline: Long) : Thread("Su
 
             if (System.currentTimeMillis() > deadline) {
                 System.err.println("The process has been running for too long; the parent has probably died by now. Exiting")
-                exitProcess(408)
+                exitProcess(RuntimeExitCodes.RUNNING_TOO_LONG)
             }
         }
     }
