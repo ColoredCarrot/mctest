@@ -1,5 +1,7 @@
 package info.voidev.mctest.engine.proto
 
+import info.voidev.mctest.engine.server.RuntimeDidExitException
+import info.voidev.mctest.runtimesdk.RuntimeExitCodes
 import info.voidev.mctest.runtimesdk.proto.EngineService
 import info.voidev.mctest.runtimesdk.proto.MctestConfig
 import info.voidev.mctest.runtimesdk.util.IsServerClassName
@@ -11,6 +13,8 @@ class EngineServiceImpl(private val config: MctestConfig) : EngineService {
 
     private val bootstrapMutex = CountDownLatch(1)
     private val serverStartedMutex = CountDownLatch(1)
+    @Volatile
+    private var runtimeExitCode = RuntimeExitCodes.RESERVED_NO_EXIT
 
     override fun notifyBootstrapComplete() {
         bootstrapMutex.countDown()
@@ -20,11 +24,20 @@ class EngineServiceImpl(private val config: MctestConfig) : EngineService {
         serverStartedMutex.countDown()
     }
 
+    fun notifyRuntimeDidExit(code: Int) {
+        runtimeExitCode = code
+        bootstrapMutex.countDown()
+        serverStartedMutex.countDown()
+    }
+
     fun awaitBootstrap() {
         val finished = bootstrapMutex.await(config.runtimeBootstrapTimeoutMs, TimeUnit.MILLISECONDS)
         if (!finished) {
             //TODO find a better design that an exception here
             throw IllegalStateException("Runtime bootstrapping timed out")
+        }
+        if (runtimeExitCode != RuntimeExitCodes.RESERVED_NO_EXIT) {
+            throw RuntimeDidExitException(runtimeExitCode)
         }
     }
 
@@ -33,6 +46,9 @@ class EngineServiceImpl(private val config: MctestConfig) : EngineService {
         if (!finished) {
             //TODO find a better design that an exception here
             throw IllegalStateException("Runtime bootstrapping timed out")
+        }
+        if (runtimeExitCode != RuntimeExitCodes.RESERVED_NO_EXIT) {
+            throw RuntimeDidExitException(runtimeExitCode)
         }
     }
 

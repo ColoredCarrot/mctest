@@ -62,6 +62,11 @@ class TestableMinecraftServer(private val config: MctestConfig) {
             .redirectError(ProcessBuilder.Redirect.INHERIT)
             .startDaemon()
 
+        process.onExit().thenAcceptAsync { proc ->
+            val exitCode = proc.exitValue()
+            engineService.notifyRuntimeDidExit(exitCode)
+        }
+
         // Wait until the runtime has bootstrapped the runtime service via RMI
         engineService.awaitBootstrap()
 
