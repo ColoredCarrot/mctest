@@ -1,6 +1,7 @@
 package info.voidev.mctest.runtime.activeserver.lib.testplayer
 
 import com.github.steveice10.mc.auth.data.GameProfile
+import com.github.steveice10.mc.protocol.MinecraftConstants
 import com.github.steveice10.mc.protocol.MinecraftProtocol
 import com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundChatPacket
 import com.github.steveice10.mc.protocol.packet.ingame.serverbound.ServerboundChatPacket
@@ -53,7 +54,8 @@ class PhysicalTestPlayerClient(spec: TestPlayerSpec, port: Int, private val scop
                     // In addition to the normal case (test complete or TODO the test intentionally kicks the player),
                     // this can happen, for example, in case an unexpected exception is thrown while handling packetReceived().
                     // TODO: Report this as an internal error/bug via RMI to the test engine, which will then terminate
-                    System.err.println("INTERNAL EXCEPTION. PLEASE REPORT THIS.  Reason: ${event.reason}  Cause: ${event.cause}")
+                    val profile: GameProfile? = event.session.getFlag(MinecraftConstants.PROFILE_KEY)
+                    System.err.println("INTERNAL EXCEPTION. PLEASE REPORT THIS.  Reason: ${event.reason}  Cause: ${event.cause}  Profile: $profile")
                     event.cause?.printStackTrace()
                 }
             }
