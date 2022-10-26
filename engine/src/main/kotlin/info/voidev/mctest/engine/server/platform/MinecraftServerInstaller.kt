@@ -9,5 +9,8 @@ abstract class MinecraftServerInstaller<in V : MinecraftPlatform.Version<*>>(
      */
     val name: String,
 ) {
+
     abstract fun install(version: V): URI
+
+    override fun toString() = name
 }

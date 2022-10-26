@@ -12,10 +12,15 @@ import info.voidev.mctest.runtimesdk.proto.RuntimeService
 import java.nio.file.Path
 import java.rmi.registry.LocateRegistry
 import java.rmi.server.UnicastRemoteObject
+import java.util.logging.Level
+import java.util.logging.Logger
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.div
 import kotlin.io.path.extension
 import kotlin.io.path.isRegularFile
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 class TestableMinecraftServer<V : MinecraftPlatform.Version<V>>(
     private val config: MctestConfig,
@@ -111,11 +116,17 @@ class TestableMinecraftServer<V : MinecraftPlatform.Version<V>>(
         if (downloadUri == null) {
             val version = determineMinecraftVersion()
             val installer = minecraftPlatform.availableInstallers.first() // TODO: Make installer configurable; use a retry mechanism/try different installers
-            downloadUri = installer.install(version)
+
+            downloadUri = logTimeElapsed(
+                message = { uri, took -> "Installed $minecraftPlatform $version via $installer in $took. Resolved to: $uri" },
+                block = { installer.install(version) },
+            )
             filename = version.filename
         }
 
-        return LocalFileCache(config.serverJarCacheDirectory).getCached(downloadUri, filename)
+        return logTimeElapsed({ localJar, took -> "Downloaded $downloadUri to $localJar in $took." }) {
+            LocalFileCache(config.serverJarCacheDirectory).getCached(downloadUri, filename)
+        }
     }
 
     private fun determineMinecraftVersion(): V {
@@ -136,8 +147,14 @@ class TestableMinecraftServer<V : MinecraftPlatform.Version<V>>(
         min?.also { return it }
 
         // No way to infer a version
-        System.err.println("Failed to infer a Minecraft version; using platform default (${minecraftPlatform.defaultVersion}).")
-        System.err.println("Please consider specifying a version with @MCVersion or mctest.server.version.")
+        log.warning(
+            """
+            Failed to infer a Minecraft version; using platform default (${minecraftPlatform.defaultVersion}).
+              Please consider specifying a version by annotating at least one test with @MCVersion
+              or setting `mctest.server.version` as a JUnit Platform configuration parameter.
+        """.trimIndent()
+        )
+
         return minecraftPlatform.defaultVersion
     }
 
@@ -148,5 +165,19 @@ class TestableMinecraftServer<V : MinecraftPlatform.Version<V>>(
         if (!path.isRegularFile()) {
             throw MCTestConfigException("$name does not exist or is not a regular file: $path")
         }
+    }
+
+    private inline fun <R> logTimeElapsed(message: (R, Duration) -> String, block: () -> R): R {
+        val startMs = System.currentTimeMillis()
+        val ret = block()
+        val took = (System.currentTimeMillis() - startMs).milliseconds
+
+        log.log(if (took > 2.seconds) Level.INFO else Level.CONFIG, message(ret, took))
+
+        return ret
+    }
+
+    companion object {
+        private val log = Logger.getLogger(TestableMinecraftServer::class.java.name)
     }
 }

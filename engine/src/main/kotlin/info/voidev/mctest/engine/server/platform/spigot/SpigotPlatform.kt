@@ -3,7 +3,7 @@ package info.voidev.mctest.engine.server.platform.spigot
 import info.voidev.mctest.engine.server.platform.MalformedVersionException
 import info.voidev.mctest.engine.server.platform.MinecraftPlatform
 
-class SpigotPlatform : MinecraftPlatform<SpigotPlatform.Version> {
+class SpigotPlatform : MinecraftPlatform<SpigotPlatform.Version>("Spigot") {
 
     override fun resolveVersion(version: String) = Version.parse(version)
 
