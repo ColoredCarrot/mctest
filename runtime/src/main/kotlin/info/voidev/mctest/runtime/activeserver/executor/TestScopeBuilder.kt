@@ -12,19 +12,21 @@ class TestScopeBuilder(
     private val testPlayerService: TestPlayerService,
 ) : TestScope, TickFunctionScope by tickScope {
 
-    private val testPlayers = ArrayList<PhysicalTestPlayer>()
+    private val _testPlayers = ArrayList<PhysicalTestPlayer>()
+
+    val testPlayers: List<PhysicalTestPlayer> get() = _testPlayers
 
     suspend fun newTestPlayer(spec: TestPlayerSpec) =
-        testPlayerService.join(spec, this).also(testPlayers::add)
+        testPlayerService.join(spec, this).also(_testPlayers::add)
 
     override suspend fun syncPackets() {
-        for (testPlayer in testPlayers) {
+        for (testPlayer in _testPlayers) {
             testPlayer.syncOwnPackets(tickScope)
         }
 
         // TODO: Remove this wonkiness when the async chat handling is dealt with
         yieldTicks(2)
-        for (testPlayer in testPlayers) {
+        for (testPlayer in _testPlayers) {
             testPlayer.syncOwnPackets(tickScope)
         }
     }

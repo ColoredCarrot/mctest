@@ -2,12 +2,11 @@ package info.voidev.mctest.runtime.activeserver.executor
 
 import info.voidev.mctest.api.MCTest
 import info.voidev.mctest.api.TickFunctionScope
-import info.voidev.mctest.api.testplayer.TestPlayer
+import info.voidev.mctest.api.yieldTicksUntil
 import info.voidev.mctest.runtime.EngineHolder
 import info.voidev.mctest.runtime.activeserver.lib.parambind.CollectiveParamBinder
 import info.voidev.mctest.runtime.activeserver.lib.parambind.TestPlayerParamBinder
 import info.voidev.mctest.runtime.activeserver.lib.parambind.TestScopeParamBinder
-import info.voidev.mctest.runtime.activeserver.lib.testplayer.PhysicalTestPlayerClient
 import info.voidev.mctest.runtime.activeserver.lib.testplayer.TestPlayerService
 import info.voidev.mctest.runtime.activeserver.lib.tickfunction.launchTickFunction
 import info.voidev.mctest.runtime.activeserver.testeePluginInstance
@@ -104,10 +103,14 @@ class TestExecutor {
             }
         } finally {
             // Disconnect any test players
-            for (arg in argsExceptContinuation) {
-                if (arg is TestPlayer) {
-                    (arg.client as PhysicalTestPlayerClient).disconnect()
-                }
+            for (testPlayer in scopeBuilder.testPlayers) {
+                testPlayer.client.disconnect()
+            }
+            // Wait until they are actually gone from the server,
+            // so that, when we join new players for the next test,
+            // there will be no name or UUID conflicts.
+            scopeBuilder.yieldTicksUntil {
+                scopeBuilder.testPlayers.none { it.isOnline }
             }
         }
     }
