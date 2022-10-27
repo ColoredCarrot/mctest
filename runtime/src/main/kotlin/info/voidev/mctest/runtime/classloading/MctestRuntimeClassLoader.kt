@@ -17,7 +17,21 @@ import java.nio.file.Path
  * Main class loader used while the server is active.
  * Instantiated in [org.bukkit.craftbukkit.bootstrap.Main].
  */
-class MctestRuntimeClassLoader(urls: Array<URL>, parent: ClassLoader?) : URLClassLoader("MCTest-Runtime", urls, null) {
+class MctestRuntimeClassLoader(
+    /**
+     * URLs to the server JAR and its libraries, populated during Bukkit's bootstrapping.
+     */
+    urls: Array<URL>,
+
+    /**
+     * The class loader with which Bukkit's bootstrap Main was loaded, i.e. the [MctestBootstrapClassLoader].
+     * Used to load Java platform classes that are not visible to the Java boot class loader, like `java.sql.*`.
+     *
+     * This class loader is **not** passed as our parent to [URLClassLoader];
+     * we want to have full control over when it is used.
+     */
+    private val theParent: ClassLoader,
+) : URLClassLoader("MCTest-Runtime", urls, null) {
 
     private val engine = engineService!!
 
@@ -44,19 +58,28 @@ class MctestRuntimeClassLoader(urls: Array<URL>, parent: ClassLoader?) : URLClas
     }
 
     override fun findClass(name: String): Class<*> {
-        if (name.startsWith("java.sql.")) {
-            throw ClassNotFoundException(name)
+        getClassTransformer(name)?.let { transformer ->
+            return findAndTransformClassInJars(name, transformer)
         }
-
-        getClassTransformer(name)?.let { return findAndTransformClassInJars(name, it) }
 
         try {
             return super.findClass(name)
         } catch (_: ClassNotFoundException) {
-            // Thrown if the class is not in the server JAR (and isn't a java.* class)
+            // Thrown if the class is not in the server JAR or its libraries and isn't found by the Java boot class loader
         }
 
-        // FIXME Remove
+        // Since Java 9, many Java modules that used to be visible to the boot class loader, like java.sql.*,
+        // have moved such that they are visible only to the platform class loader
+        // (not the application class loader either--they're not on the classpath).
+        // Therefore, we need to ask the platform class loader as well, which is accessible to us via our parent.
+        // See https://bugs.openjdk.org/browse/JDK-8161269?focusedCommentId=13973088&page=com.atlassian.jira.plugin.system.issuetabpanels:comment-tabpanel#comment-13973088
+        try {
+            return theParent.loadClass(name)
+        } catch (_: ClassNotFoundException) {
+            // Thrown if the class is not a Java platform class
+        }
+
+        // Optimization/Security Guard: We never want to access engine classes in the runtime
         if (name.startsWith("info.voidev.mctest.engine.")) {
             throw ClassNotFoundException(name)
         }
