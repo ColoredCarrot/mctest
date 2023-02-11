@@ -20,7 +20,7 @@ class SpigotPlatform : MinecraftPlatform<SpigotPlatform.Version>("Spigot") {
         val minor: UInt,
     ) : MinecraftPlatform.Version<Version>("spigot-${toString(major, minor)}") {
 
-        override fun toString() = Companion.toString(major, minor)
+        override fun toString() = toString(major, minor)
 
         override fun compareTo(other: Version): Int {
             return if (major != other.major) major.compareTo(other.major)
