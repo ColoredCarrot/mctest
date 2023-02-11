@@ -2,6 +2,7 @@ package info.voidev.mctest.engine.server
 
 import info.voidev.mctest.engine.config.MCTestConfigException
 import info.voidev.mctest.engine.proto.EngineServiceImpl
+import info.voidev.mctest.engine.server.platform.MalformedVersionException
 import info.voidev.mctest.engine.server.platform.MinecraftPlatform
 import info.voidev.mctest.engine.util.LocalFileCache
 import info.voidev.mctest.engine.util.TemporaryDirectories
@@ -134,9 +135,14 @@ class TestableMinecraftServer<V : MinecraftPlatform.Version<V>>(
         val (min, max) = allowableVersionRange
 
         // Determine from config
-        config.minecraftVersion?.let(minecraftPlatform::resolveVersion)?.also { version ->
+        val configuredVersion = try {
+            config.minecraftVersion?.let(minecraftPlatform::resolveVersion)
+        } catch (ex: MalformedVersionException) {
+            throw RuntimeException("Configured Minecraft version is invalid: ${ex.message}", ex)
+        }
+        configuredVersion?.also { version ->
             if (min != null && version < min || max != null && version > max) {
-                throw RuntimeException("Configured Minecraft version ($version) conflicts with inferred allowable version range")
+                throw RuntimeException("Configured Minecraft version ($version) conflicts with inferred allowable version range (${min ?: "*"} - ${max ?: "*"})")
             }
 
             return version

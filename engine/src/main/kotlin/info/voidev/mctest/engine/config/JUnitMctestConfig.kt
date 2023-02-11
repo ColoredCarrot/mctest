@@ -34,6 +34,7 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
 
     override val minecraftVersion: String? = params
         .get("mctest.server.version").orElse(null)
+        ?.takeUnless { it.equals("auto", ignoreCase = true) }
         ?.ifEmpty { null }
 
     override val downloadableServerJar: URI? = params
