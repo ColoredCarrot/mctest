@@ -1,8 +1,7 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow")
     java
     kotlin("jvm")
 }
@@ -29,6 +28,6 @@ tasks.getByName<ProcessResources>("processResources") {
     ))
 }
 
-tasks.getByName<ShadowJar>("shadowJar") {
+tasks.shadowJar {
 //    exclude(":engine")
 }
