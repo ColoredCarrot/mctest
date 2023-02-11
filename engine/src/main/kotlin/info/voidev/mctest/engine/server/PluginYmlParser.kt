@@ -15,14 +15,21 @@ class PluginYmlParser {
 
         var main: String? = null
         var name: String? = null
+        var apiVersion: String? = null
 
         istream.use {
             istream.reader().useLines { lines ->
                 lines.forEach { line ->
-                    if (line.startsWith("main:")) {
-                        main = line.substring("main:".length).trim()
-                    } else if (line.startsWith("name:")) {
-                        name = line.substring("name:".length).trim()
+                    when {
+                        line.startsWith("main:") -> {
+                            main = line.substring("main:".length).trim()
+                        }
+                        line.startsWith("name:") -> {
+                            name = line.substring("name:".length).trim()
+                        }
+                        line.startsWith("api-version:") -> {
+                            apiVersion = line.substring("api-version:".length).trim()
+                        }
                     }
                 }
             }
@@ -32,7 +39,7 @@ class PluginYmlParser {
             throw AssertionFailedException("Invalid plugin.yml")
         }
 
-        return PluginYml(name!!, main!!)
+        return PluginYml(name!!, main!!, apiVersion)
     }
 
 }

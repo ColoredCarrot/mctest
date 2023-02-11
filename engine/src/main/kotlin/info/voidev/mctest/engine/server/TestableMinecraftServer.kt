@@ -33,6 +33,8 @@ class TestableMinecraftServer<V : MinecraftPlatform.Version<V>>(
 
     private var session: TestableServerSession? = null
 
+    private val pluginYml = PluginYmlParser().parseFromClasspath()
+
     fun requireActiveSession() = session!!
 
     @Synchronized
@@ -40,8 +42,6 @@ class TestableMinecraftServer<V : MinecraftPlatform.Version<V>>(
         if (session != null) {
             return
         }
-
-        val pluginYml = PluginYmlParser().parseFromClasspath()
 
         MinecraftServerInitializer(serverDir).run()
 
@@ -131,8 +131,15 @@ class TestableMinecraftServer<V : MinecraftPlatform.Version<V>>(
     }
 
     private fun determineMinecraftVersion(): V {
-        // TODO: Consider plugin.yml api-version
-        val (min, max) = allowableVersionRange
+        var (min, max) = allowableVersionRange
+
+        // Consider plugin.yml
+        if (pluginYml.apiVersion != null) {
+            val declaredApiVersion = minecraftPlatform.resolveVersion(pluginYml.apiVersion)
+            if (min == null || declaredApiVersion > min) {
+                min = declaredApiVersion
+            }
+        }
 
         // Determine from config
         val configuredVersion = try {
@@ -156,8 +163,9 @@ class TestableMinecraftServer<V : MinecraftPlatform.Version<V>>(
         log.warning(
             """
             Failed to infer a Minecraft version; using platform default (${minecraftPlatform.defaultVersion}).
-              Please consider specifying a version by annotating at least one test with @MCVersion
-              or setting `mctest.server.version` as a JUnit Platform configuration parameter.
+              Please consider specifying a version by declaring an api-version in your plugin.yml,
+              annotating at least one test or test class with @MCVersion, or
+              setting `mctest.server.version` as a JUnit Platform configuration parameter.
         """.trimIndent()
         )
 
