@@ -74,7 +74,7 @@ class MinecraftServerInitializer(private val dir: Path) : Runnable {
         val actualPluginYml = javaClass.classLoader.getResourceAsStream("plugin.yml")
             ?: throw AssertionFailedException("plugin.yml is not on the classpath")
 
-        actualPluginYml.transferTo(ostream)
+        actualPluginYml.use { it.transferTo(ostream) }
     }
 
     private fun validateDirectory() {
