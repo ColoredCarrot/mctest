@@ -2,7 +2,6 @@ rootProject.name = "mctest"
 
 include("api")
 include("api-assertj")
-include("mcproto")
 include("mcproto:api")
 include("mcproto:mc_1_18_2")
 include("runtime-sdk")
