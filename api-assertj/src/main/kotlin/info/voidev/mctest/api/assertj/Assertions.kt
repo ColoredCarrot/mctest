@@ -2,10 +2,10 @@
 
 package info.voidev.mctest.api.assertj
 
+import info.voidev.mcproto.api.TabList
+import info.voidev.mctest.api.TestScope
 import info.voidev.mctest.api.testplayer.TestPlayer
 import info.voidev.mctest.api.testplayer.TestPlayerClient
-import info.voidev.mctest.api.TestScope
-import info.voidev.mctest.api.testplayer.ClientTabList
 import org.bukkit.Location
 
 suspend fun TestScope.assertThat(actual: TestPlayer): TestPlayerAssert {
@@ -18,7 +18,7 @@ suspend fun TestScope.assertThat(actual: TestPlayerClient): TestPlayerClientAsse
     return TestPlayerClientAssert(actual)
 }
 
-fun assertThat(actual: ClientTabList) = ClientTabListAssert(actual)
-fun assertThat(actual: ClientTabList.Entry) = ClientTabListEntryAssert(actual)
+fun assertThat(actual: TabList) = TabListAssert(actual)
+fun assertThat(actual: TabList.Entry) = TabListEntryAssert(actual)
 
 fun assertThat(actual: Location) = LocationAssert(actual)

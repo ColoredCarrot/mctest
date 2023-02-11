@@ -1,23 +1,19 @@
-package info.voidev.mctest.runtime.activeserver.lib.testplayer.state
+package info.voidev.mcproto.impl.mc_1_18_2
 
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntry
 import com.github.steveice10.mc.protocol.data.game.PlayerListEntryAction
-import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode
 import com.github.steveice10.mc.protocol.packet.ingame.clientbound.ClientboundPlayerInfoPacket
-import info.voidev.mctest.api.Assertions
-import info.voidev.mctest.api.testplayer.ClientTabList
-import info.voidev.mctest.runtime.activeserver.lib.chatcomponent.extractText
-import net.kyori.adventure.text.Component
+import info.voidev.mcproto.api.TabList
+import org.bukkit.GameMode
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
-import org.bukkit.GameMode as BukkitGameMode
+import com.github.steveice10.mc.protocol.data.game.entity.player.GameMode as ProtoGameMode
 
-class ClientTabListImpl : ClientTabList {
+class TabList_1_18_2 : TabList {
 
-    private val entriesMap = ConcurrentHashMap<UUID, Entry>()
+    private val entriesMap = ConcurrentHashMap<UUID, TabList.Entry>()
 
-    override val entries: List<ClientTabList.Entry>
-        get() = entriesMap.values.toList()
+    override fun iterator() = entriesMap.values.iterator()
 
     fun update(packet: ClientboundPlayerInfoPacket) {
         when (packet.action) {
@@ -38,34 +34,22 @@ class ClientTabListImpl : ClientTabList {
 
     private fun updateGameMode(update: PlayerListEntry) {
         entriesMap.compute(update.profile.id) { _, entry ->
-            if (entry != null) {
-                entry.gameMode = mapGameMode(update.gameMode)
-                entry
-            } else {
-                createEntry(update)
-            }
+            entry?.copy(gameMode = mapGameMode(update.gameMode))
+                ?: createEntry(update)
         }
     }
 
     private fun updateLatency(update: PlayerListEntry) {
         entriesMap.compute(update.profile.id) { _, entry ->
-            if (entry != null) {
-                entry.ping = update.ping
-                entry
-            } else {
-                createEntry(update)
-            }
+            entry?.copy(ping = update.ping)
+                ?: createEntry(update)
         }
     }
 
     private fun updateDisplayName(update: PlayerListEntry) {
         entriesMap.compute(update.profile.id) { _, entry ->
-            if (entry != null) {
-                entry.displayName = update.displayName
-                entry
-            } else {
-                createEntry(update)
-            }
+            entry?.copy(displayName = update.displayName?.let(::ChatComponent_1_18_2))
+                ?: createEntry(update)
         }
     }
 
@@ -76,30 +60,19 @@ class ClientTabListImpl : ClientTabList {
         }
     }
 
-    private fun createEntry(update: PlayerListEntry) = Entry(
+    private fun createEntry(update: PlayerListEntry) = TabList.Entry(
         playerId = update.profile.id,
         name = update.profile.name ?: "<unnamed>",
-        displayName = update.displayName,
+        displayName = update.displayName?.let(::ChatComponent_1_18_2),
         gameMode = mapGameMode(update.gameMode),
         ping = update.ping,
     )
 
-    private fun mapGameMode(gameMode: GameMode?): BukkitGameMode? = when (gameMode) {
-        GameMode.SURVIVAL -> BukkitGameMode.SURVIVAL
-        GameMode.CREATIVE -> BukkitGameMode.CREATIVE
-        GameMode.ADVENTURE -> BukkitGameMode.ADVENTURE
-        GameMode.SPECTATOR -> BukkitGameMode.SPECTATOR
-        GameMode.UNKNOWN, null -> null
-    }
-
-    data class Entry(
-        override val playerId: UUID,
-        override val name: String,
-        var displayName: Component?,
-        override var gameMode: BukkitGameMode?,
-        override var ping: Int,
-    ) : ClientTabList.Entry {
-        override val displayNameText: String?
-            get() = displayName?.extractText()
+    private fun mapGameMode(gameMode: ProtoGameMode?): GameMode? = when (gameMode) {
+        ProtoGameMode.SURVIVAL -> GameMode.SURVIVAL
+        ProtoGameMode.CREATIVE -> GameMode.CREATIVE
+        ProtoGameMode.ADVENTURE -> GameMode.ADVENTURE
+        ProtoGameMode.SPECTATOR -> GameMode.SPECTATOR
+        ProtoGameMode.UNKNOWN, null -> null
     }
 }

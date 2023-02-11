@@ -4,6 +4,9 @@ import info.voidev.mctest.runtime.activeserver.lib.nms.MinecraftInternals
 import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap
 import org.bukkit.entity.Player
 
+/**
+ * Server-side packet counter.
+ */
 object ServerPacketCounter {
 
     @JvmStatic

@@ -10,7 +10,7 @@ class TestPlayerClientAssert(actual: TestPlayerClient) :
     AbstractAssert<TestPlayerClientAssert, TestPlayerClient>(actual, TestPlayerClientAssert::class.java) {
 
     fun receivedMessages(): ListAssert<String> =
-        ListAssert.assertThatList(actual.receivedMessages.toList())
+        ListAssert.assertThatList(actual.receivedMessages.map { it.message().toPlainText() })
 
     inline fun hasReceivedMessageThat(crossinline asserter: StringAssert.() -> Unit): TestPlayerClientAssert {
         receivedMessages().anySatisfy(Consumer {

@@ -1,7 +1,13 @@
 package info.voidev.mctest.api.testplayer
 
-import org.bukkit.entity.Entity
+import info.voidev.mcproto.api.ChatMessage
+import info.voidev.mcproto.api.MinecraftClient
+import info.voidev.mcproto.api.TabList
 
+/**
+ * Basically a [MinecraftClient], but optimized for usage in tests.
+ * Methods that send packets to the server suspend until those packets were received.
+ */
 interface TestPlayerClient {
 
     /**
@@ -15,13 +21,8 @@ interface TestPlayerClient {
      */
     suspend fun say(message: String)
 
-    val receivedMessages: List<String>
+    val receivedMessages: List<ChatMessage>
 
-    val knownEntities: List<Entity>
-
-    val tabList: ClientTabList
-
-    // TODO: We might make MCProtocolLib an api dependency as well,
-    //  so that we could have received/sentPackets and corresponding AssertJ extensions
+    val tabList: TabList
 
 }

@@ -9,7 +9,8 @@ version = "0.1.0"
 
 dependencies {
     api("org.junit.platform:junit-platform-commons:1.9.0")
-    api("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")//TODO is there a more appropriate config for this?
+    api("org.spigotmc:spigot-api:1.18.2-R0.1-SNAPSHOT")//TODO is there a more appropriate config for this? In any case, this should probably always be the most recent version, since spigot-api is stable
+    api(project(":mcproto:api"))
 
     // In case we want to test the api module itself:
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
