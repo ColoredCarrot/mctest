@@ -1,5 +1,6 @@
 package info.voidev.mctest.runtimesdk.proto
 
+import info.voidev.mctest.runtimesdk.versioning.VersionMatrixStrategy
 import java.net.URI
 import java.nio.file.Path
 
@@ -40,6 +41,8 @@ interface MctestConfig {
      */
     val minecraftVersion: String?
 
+    val minecraftVersionStrategy: VersionMatrixStrategy
+
     /**
      * URL that the Minecraft server JAR can be downloaded from.
      *
@@ -55,7 +58,9 @@ interface MctestConfig {
     val serverJarCacheDirectory: Path
 
     /**
-     * Absolute path to the directory the Minecraft server will be run in.
+     * Absolute path to a directory under which the Minecraft server will be run.
+     *
+     * The actual server directory is some subdirectory of this directory.
      *
      * If `null`, a temporary directory created by the operating system will be used.
      */

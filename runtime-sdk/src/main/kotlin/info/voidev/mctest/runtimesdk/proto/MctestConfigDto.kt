@@ -1,5 +1,6 @@
 package info.voidev.mctest.runtimesdk.proto
 
+import info.voidev.mctest.runtimesdk.versioning.VersionMatrixStrategy
 import java.io.Serializable
 import java.net.URI
 import kotlin.io.path.Path
@@ -9,6 +10,7 @@ class MctestConfigDto(
     private val dataDirectory_: String,
     private val runtimeJar_: String?,
     override val minecraftVersion: String?,
+    override val minecraftVersionStrategy: VersionMatrixStrategy,
     override val downloadableServerJar: URI?,
     private val serverJarCacheDirectory_: String,
     private val serverDirectory_: String?,

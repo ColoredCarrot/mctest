@@ -1,4 +1,4 @@
-package info.voidev.mctest.engine.server.platform
+package info.voidev.mctest.runtimesdk.versioning
 
 class MalformedVersionException(
     val version: String,

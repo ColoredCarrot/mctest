@@ -3,13 +3,13 @@ package info.voidev.mctest.runtimesdk.util
 import org.junit.platform.commons.util.ReflectionUtils.isInnerClass
 import org.junit.platform.commons.util.ReflectionUtils.isMethodPresent
 import java.lang.reflect.Modifier.isAbstract
-import java.lang.reflect.Modifier.isPrivate
+import java.lang.reflect.Modifier.isPublic
 import java.util.function.Predicate
 
 object IsTestClassWithTests : Predicate<Class<*>> {
     override fun test(c: Class<*>): Boolean {
-        // Test class must not be private or abstract...
-        if (isPrivate(c.modifiers) || isAbstract(c.modifiers)) {
+        // Test class must be public and must not abstract...
+        if (!isPublic(c.modifiers) || isAbstract(c.modifiers)) {
             return false
         }
 
@@ -23,7 +23,7 @@ object IsTestClassWithTests : Predicate<Class<*>> {
             return false
         }
 
-        // ...and have a public no-args constructor
+        // ...and have a public no-args constructor.
         try {
             c.getConstructor()
         } catch (_: NoSuchMethodException) {

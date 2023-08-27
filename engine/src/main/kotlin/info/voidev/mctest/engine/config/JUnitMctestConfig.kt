@@ -4,6 +4,7 @@ import info.voidev.mctest.engine.util.CommandArgumentSplitter
 import info.voidev.mctest.engine.util.SystemInfo
 import info.voidev.mctest.runtimesdk.proto.MctestConfig
 import info.voidev.mctest.runtimesdk.proto.MctestConfigDto
+import info.voidev.mctest.runtimesdk.versioning.VersionMatrixStrategy
 import org.junit.platform.engine.ConfigurationParameters
 import java.io.ObjectStreamException
 import java.io.Serializable
@@ -36,6 +37,15 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
         .get("mctest.server.version").orElse(null)
         ?.takeUnless { it.equals("auto", ignoreCase = true) }
         ?.ifEmpty { null }
+
+    override val minecraftVersionStrategy: VersionMatrixStrategy = params
+        .get("mctest.server.version.strategy") {
+            when (it.lowercase()) {
+                "most_recent" -> VersionMatrixStrategy.MostRecent
+                "oldest_and_newest" -> VersionMatrixStrategy.OldestAndNewest
+                else -> throw IllegalArgumentException("Invalid version matrix strategy: $it")
+            }
+        }.orElse(VersionMatrixStrategy.MostRecent)
 
     override val downloadableServerJar: URI? = params
         .get("mctest.server.jar.url", ::URI).orElse(null)
@@ -73,21 +83,22 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
         .get("mctest.runtime.global.timeout.ms", String::toLong).orElse(null)
         ?: TimeUnit.MINUTES.toMillis(30)
 
-    fun export(): Map<String, String> = mapOf(
-        "mctest.java" to java.toString(),
-        "mctest.data.dir" to dataDirectory.toString(),
-        "mctest.runtime.jar" to runtimeJar.toString(),
-        "mctest.server.version" to minecraftVersion.orEmpty(),
-        "mctest.server.jar.url" to downloadableServerJar.toString(),
-        "mctest.server.jar.cache" to serverJarCacheDirectory.toString(),
-        "mctest.server.dir" to serverDirectory.toString(),
-        "mctest.rmi.port" to rmiPort.toString(),
-        "mctest.runtime.jvm.args" to CommandArgumentSplitter.join(runtimeJvmArgs),
-        "mctest.runtime.bootstrap.timeout.ms" to runtimeBootstrapTimeoutMs.toString(),
-        "mctest.server.start.timeout.ms" to serverStartTimeoutMs.toString(),
-        "mctest.testplayer.join.timeout.ms" to testPlayerJoinTimeoutMs.toString(),
-        "mctest.runtime.global.timeout.ms" to runtimeGlobalTimeoutMs.toString(),
-    )
+    fun export(includeDefaults: Boolean = false /*TODO don't export values which are default*/): Map<String, String> =
+        mapOf(
+            "mctest.java" to java.toString(),
+            "mctest.data.dir" to dataDirectory.toString(),
+            "mctest.runtime.jar" to runtimeJar.toString(),
+            "mctest.server.version" to (minecraftVersion ?: "auto"),
+            "mctest.server.jar.url" to downloadableServerJar.toString(),
+            "mctest.server.jar.cache" to serverJarCacheDirectory.toString(),
+            "mctest.server.dir" to serverDirectory.toString(),
+            "mctest.rmi.port" to rmiPort.toString(),
+            "mctest.runtime.jvm.args" to CommandArgumentSplitter.join(runtimeJvmArgs),
+            "mctest.runtime.bootstrap.timeout.ms" to runtimeBootstrapTimeoutMs.toString(),
+            "mctest.server.start.timeout.ms" to serverStartTimeoutMs.toString(),
+            "mctest.testplayer.join.timeout.ms" to testPlayerJoinTimeoutMs.toString(),
+            "mctest.runtime.global.timeout.ms" to runtimeGlobalTimeoutMs.toString(),
+        )
 
     override fun toString() = export()
         .entries
@@ -115,6 +126,7 @@ class JUnitMctestConfig(params: ConfigurationParameters) : MctestConfig, Seriali
             dataDirectory.toString(),
             runtimeJar?.toString(),
             minecraftVersion,
+            minecraftVersionStrategy,
             downloadableServerJar,
             serverJarCacheDirectory.toString(),
             serverDirectory?.toString(),

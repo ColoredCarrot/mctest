@@ -1,6 +1,7 @@
 package info.voidev.mctest.engine
 
-import info.voidev.mctest.engine.discovery.DiscoverySelectorResolver
+import info.voidev.mctest.engine.config.JUnitMctestConfig
+import info.voidev.mctest.engine.discovery.MctestDiscoverySelectorResolver
 import info.voidev.mctest.engine.execution.McTestExecutor
 import org.junit.platform.engine.EngineDiscoveryRequest
 import org.junit.platform.engine.ExecutionRequest
@@ -18,15 +19,12 @@ class MctestEngine : TestEngine {
     override fun getArtifactId() = Optional.of("engine")
 
     override fun discover(discoveryRequest: EngineDiscoveryRequest, uniqueId: UniqueId): TestDescriptor {
-        val descriptor = MctestEngineDescriptor(uniqueId)
+        val root = MctestEngineDescriptor(uniqueId, JUnitMctestConfig(discoveryRequest.configurationParameters))
 
         // Populate the root descriptor by running our different selector resolvers
-        DiscoverySelectorResolver.resolve(discoveryRequest, descriptor)
+        MctestDiscoverySelectorResolver.resolve(discoveryRequest, root)
 
-        // TODO: If running Minecraft version-matrix tests, for each discovered test,
-        //  generate one for each version
-
-        return descriptor
+        return root
     }
 
     override fun execute(request: ExecutionRequest) {

@@ -1,5 +1,6 @@
 package info.voidev.mctest.engine.discovery
 
+import info.voidev.mctest.engine.plan.tree.ClassTestDescriptor
 import info.voidev.mctest.runtimesdk.util.IsTestClassWithTests
 import org.junit.platform.commons.util.ReflectionUtils
 import org.junit.platform.engine.discovery.ClassSelector

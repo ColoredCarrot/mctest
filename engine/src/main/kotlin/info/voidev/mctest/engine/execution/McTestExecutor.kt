@@ -2,16 +2,19 @@ package info.voidev.mctest.engine.execution
 
 import info.voidev.mctest.api.Disabled
 import info.voidev.mctest.engine.MctestEngineDescriptor
-import info.voidev.mctest.engine.config.JUnitMctestConfig
-import info.voidev.mctest.engine.discovery.ClassTestDescriptor
-import info.voidev.mctest.engine.discovery.MethodTestDescriptor
+import info.voidev.mctest.engine.plan.tree.ClassTestDescriptor
+import info.voidev.mctest.engine.plan.tree.LeafTestDescriptor
+import info.voidev.mctest.engine.plan.tree.MethodTestDescriptor
 import info.voidev.mctest.engine.server.TestableMinecraftServer
 import info.voidev.mctest.engine.server.TestableServerSession
-import info.voidev.mctest.engine.server.platform.MinecraftPlatform
 import info.voidev.mctest.engine.server.platform.spigot.SpigotPlatform
+import info.voidev.mctest.engine.util.traverseTree
 import info.voidev.mctest.engine.util.unwrapRmiExceptions
+import info.voidev.mctest.runtimesdk.versioning.VersionSet
+import info.voidev.mctest.runtimesdk.versioning.minecraft.MinecraftVersion
 import org.junit.platform.engine.ConfigurationParameters
 import org.junit.platform.engine.EngineExecutionListener
+import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.TestExecutionResult
 import org.junit.platform.engine.reporting.ReportEntry
 import org.objectweb.asm.Type
@@ -25,49 +28,56 @@ class McTestExecutor(
     params: ConfigurationParameters,
 ) {
 
-    private val config = JUnitMctestConfig(params)
-
-    private val mcVersionInference = MinecraftVersionInference()
-
     fun execute() {
         listener.executionStarted(root)
 
+        val versions = getAllVersions(root)
+
         // We don't need to start a server if there's no tests to be executed
-        if (root.children.isEmpty()) {
+        if (versions.isEmpty()) {
             listener.executionFinished(root, TestExecutionResult.successful())
             return
         }
 
-        val minecraftPlatform = SpigotPlatform()
-
-        val allowableVersionRange = mcVersionInference.calculateAllowableRange(root, minecraftPlatform)
-        checkVersionRangeNotEmpty(allowableVersionRange)
-
-        var server: TestableMinecraftServer<SpigotPlatform.Version>? = null
+        val serversByVersion = versions.associateWith { version ->
+            TestableMinecraftServer(root.config, SpigotPlatform, version)
+        }
         try {
-            server = TestableMinecraftServer(config, minecraftPlatform, allowableVersionRange)
-            server.start()
+            // Spin up the required servers
+            // TODO parallelize
+            for (server in serversByVersion.values) {
+                server.start()
 
-            val serverSession = server.requireActiveSession()
-            val tookMillis = measureTimeMillis {
-                serverSession.engine.waitForServerToStart()
+                val serverSession = server.requireActiveSession()
+                val tookMillis = measureTimeMillis {
+                    serverSession.engine.waitForServerToStart()
+                }
+                listener.reportingEntryPublished(
+                    root,
+                    ReportEntry.from("mctest.serverStartTimeMs", "%.2fs".format(tookMillis.toDouble() / 1000))
+                )
             }
-            listener.reportingEntryPublished(root, ReportEntry.from("mctest.serverStartTimeMs", "%.2fs".format(tookMillis.toDouble() / 1000)))
 
             // Run the tests
             for (child in root.children) {
-                executeClass(child as ClassTestDescriptor, serverSession)
+                executeClass(child as ClassTestDescriptor, serversByVersion)
+            }
+
+            for (server in serversByVersion.values) {
+                server.stop()
             }
 
             listener.executionFinished(root, TestExecutionResult.successful())
         } catch (ex: Throwable) {
             listener.executionFinished(root, TestExecutionResult.failed(ex))
         } finally {
-            server?.stop()
+            for (server in serversByVersion.values) {
+                server.stop()
+            }
         }
     }
 
-    private fun executeClass(testClass: ClassTestDescriptor, serverSession: TestableServerSession) {
+    private fun executeClass(testClass: ClassTestDescriptor, servers: Map<MinecraftVersion, TestableMinecraftServer>) {
         getDisabledReason(testClass.testClass)?.also { disabledReason ->
             listener.executionSkipped(testClass, disabledReason)
             return
@@ -78,7 +88,7 @@ class McTestExecutor(
         try {
             // Run the tests inside the class
             for (child in testClass.children) {
-                executeTestMethod(child as MethodTestDescriptor, serverSession)
+                executeTestMethod(child as MethodTestDescriptor, servers)
             }
 
             listener.executionFinished(testClass, TestExecutionResult.successful())
@@ -87,28 +97,48 @@ class McTestExecutor(
         }
     }
 
-    private fun executeTestMethod(testMethod: MethodTestDescriptor, serverSession: TestableServerSession) {
-        getDisabledReason(testMethod.method)?.also { disabledReason ->
-            listener.executionSkipped(testMethod, disabledReason)
+    private fun executeTestMethod(testMethod: MethodTestDescriptor, servers: Map<MinecraftVersion, TestableMinecraftServer>) {
+        listener.executionStarted(testMethod)
+        try {
+
+            for (child in testMethod.children) {
+                executeLeaf(child as LeafTestDescriptor, servers[child.minecraftVersion]!!.requireActiveSession())
+            }
+
+            listener.executionFinished(testMethod, TestExecutionResult.successful())
+        } catch (ex: Throwable) {
+            listener.executionFinished(testMethod, TestExecutionResult.failed(ex))
+            if (ex !is Exception) {
+                throw ex
+            }
+        }
+    }
+
+    private fun executeLeaf(leaf: LeafTestDescriptor, serverSession: TestableServerSession) {
+        getDisabledReason(leaf.method)?.also { disabledReason ->
+            listener.executionSkipped(leaf, disabledReason)
             return
         }
 
-        listener.executionStarted(testMethod)
+        listener.executionStarted(leaf)
 
         try {
             // Test method should be executed on runtime side, not engine
             //  (=> use RMI service to request test execution)
             unwrapRmiExceptions {
                 serverSession.runtime.runTestMethod(
-                    testMethod.method.declaringClass.name,
-                    testMethod.method.name,
-                    Type.getMethodDescriptor(testMethod.method)
+                    leaf.method.declaringClass.name,
+                    leaf.method.name,
+                    Type.getMethodDescriptor(leaf.method)
                 )
             }
 
-            listener.executionFinished(testMethod, TestExecutionResult.successful())
+            listener.executionFinished(leaf, TestExecutionResult.successful())
         } catch (ex: Throwable) {
-            listener.executionFinished(testMethod, TestExecutionResult.failed((ex as? InvocationTargetException)?.targetException ?: ex))
+            listener.executionFinished(
+                leaf,
+                TestExecutionResult.failed((ex as? InvocationTargetException)?.targetException ?: ex)
+            )
         }
     }
 
@@ -117,13 +147,16 @@ class McTestExecutor(
         return annot.value.trim().ifEmpty { "$testMethodOrClass is @Disabled" }
     }
 
-    private fun <V : MinecraftPlatform.Version<V>> checkVersionRangeNotEmpty(range: Pair<V?, V?>) {
-        val (min, max) = range
-        if (min != null && max != null && min > max) {
-            // TODO: Instead of giving up, we can divide all tests into test groups,
-            //  each of which will receive a fresh server with a different version.
-            //  This would allow parallel execution.
-            throw RuntimeException("Conflicting Minecraft version requirements")
-        }
+    /**
+     * Given a root [TestDescriptor], calculate all Minecraft versions for which test servers need to be spun up.
+     */
+    private fun getAllVersions(testRoot: TestDescriptor): VersionSet<MinecraftVersion> {
+        return traverseTree(
+            root = testRoot,
+            getChildren = { test -> test.children.asSequence() }
+        )
+            .filterIsInstance<LeafTestDescriptor>()
+            .map { test -> test.minecraftVersion }
+            .let { VersionSet(it.toList()) }
     }
 }

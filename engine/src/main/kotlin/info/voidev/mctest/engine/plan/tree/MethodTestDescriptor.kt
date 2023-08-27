@@ -1,4 +1,4 @@
-package info.voidev.mctest.engine.discovery
+package info.voidev.mctest.engine.plan.tree
 
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.UniqueId
@@ -11,9 +11,9 @@ import java.lang.reflect.Method
 class MethodTestDescriptor(
     uniqueId: UniqueId,
     val method: Method,
-) : McTestDescriptor(uniqueId, method.name, method, MethodSource.from(method)) {
+) : AbstractElementBasedMcTestDescriptor(uniqueId, method.name, method, MethodSource.from(method)) {
 
-    override fun getType() = TestDescriptor.Type.TEST
+    override fun getType() = TestDescriptor.Type.CONTAINER
 
     companion object {
         const val SEGMENT_TYPE = "method"

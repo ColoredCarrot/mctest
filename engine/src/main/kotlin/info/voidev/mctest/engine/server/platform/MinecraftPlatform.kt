@@ -1,20 +1,26 @@
 package info.voidev.mctest.engine.server.platform
 
+import info.voidev.mctest.runtimesdk.versioning.MalformedVersionException
+import info.voidev.mctest.runtimesdk.versioning.Version
+import info.voidev.mctest.runtimesdk.versioning.Versioning
+
 /**
  * A Minecraft server platform, like Spigot or Paper.
  */
-abstract class MinecraftPlatform<V : MinecraftPlatform.Version<V>>(
+abstract class MinecraftPlatform<V : Version<V>>(
     /**
      * The human-readable platform name, like "Spigot" or "Paper".
      */
     val name: String,
+    val filenamePrefix: String,
+    val versioning: Versioning<V>,
 ) {
 
     /**
      * Parses a [version string][version] to a version.
      */
     @Throws(MalformedVersionException::class)
-    abstract fun resolveVersion(version: String): V
+    open fun resolveVersion(version: String): V = versioning.resolve(version)
 
     /**
      * If MCTest is unable to infer an appropriate version,
@@ -33,15 +39,4 @@ abstract class MinecraftPlatform<V : MinecraftPlatform.Version<V>>(
     open fun resolveInstaller(name: String) = availableInstallers.firstOrNull { it.name == name }
 
     override fun toString() = name
-
-    abstract class Version<V : Version<V>>(filenameWithoutExt: String) : Comparable<V> {
-
-        val filename = "$filenameWithoutExt.jar"
-
-        init {
-            require(filenameWithoutExt.none { it.isWhitespace() })
-        }
-
-        abstract override fun toString(): String
-    }
 }

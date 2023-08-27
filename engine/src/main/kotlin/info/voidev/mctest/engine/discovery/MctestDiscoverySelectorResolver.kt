@@ -6,12 +6,15 @@ import org.junit.platform.engine.EngineDiscoveryRequest
 import org.junit.platform.engine.TestDescriptor
 import org.junit.platform.engine.support.discovery.EngineDiscoveryRequestResolver
 
-object DiscoverySelectorResolver {
+object MctestDiscoverySelectorResolver {
+
     private val resolver = EngineDiscoveryRequestResolver
         .builder<MctestEngineDescriptor>()
+        // Resolve packages, modules, etc. to lists of class selectors
         .addClassContainerSelectorResolver(IsTestClassWithTests)
         .addSelectorResolver { ctx -> ClassSelectorResolver(ctx.classNameFilter) }
-        .addSelectorResolver(MethodSelectorResolver())
+        .addSelectorResolver { ctx -> MethodSelectorResolver(ctx) }
+        .addSelectorResolver(LeafSelectorResolver())
         .addTestDescriptorVisitor { TestDescriptor.Visitor(TestDescriptor::prune) }
         .build()
 
